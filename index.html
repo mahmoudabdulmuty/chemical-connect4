@@ -170,7 +170,7 @@
 
       .question-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(325px, 1fr));
         gap: 20px;
         margin-bottom: 20px;
       }
@@ -957,7 +957,8 @@
           </h2>
 
           <p style="color: #666; margin-bottom: 20px">
-            For each cell, edit the X-label (column), Y-label (row), and valid answers.<br>
+            For each cell, edit the X-label (column), Y-label (row), and valid
+            answers.<br />
             Answers should be separated by commas (e.g., H2SO4, sulfuric acid)
           </p>
 
@@ -1059,42 +1060,184 @@
       ];
 
       const defaultAnswers = {
-        '0-0': ['hno3', 'nitric acid', 'h2so4', 'sulfuric acid', 'hclo4', 'perchloric acid', 'kmno4', 'potassium permanganate'],
+        '0-0': [
+          'hno3',
+          'nitric acid',
+          'h2so4',
+          'sulfuric acid',
+          'hclo4',
+          'perchloric acid',
+          'kmno4',
+          'potassium permanganate'
+        ],
         '0-1': ['hi', 'hydroiodic acid', 'hbr', 'hydrobromic acid'],
         '0-2': ['edta', 'ethylenediaminetetraacetic acid'],
-        '0-3': ['h2so4', 'sulfuric acid', 'hcl', 'hydrochloric acid', 'baso4', 'barium sulfate', 'agcl', 'silver chloride'],
-        '0-4': ['hno3', 'nitric acid', 'h2so4', 'sulfuric acid', 'hclo4', 'perchloric acid'],
+        '0-3': [
+          'h2so4',
+          'sulfuric acid',
+          'hcl',
+          'hydrochloric acid',
+          'baso4',
+          'barium sulfate',
+          'agcl',
+          'silver chloride'
+        ],
+        '0-4': [
+          'hno3',
+          'nitric acid',
+          'h2so4',
+          'sulfuric acid',
+          'hclo4',
+          'perchloric acid'
+        ],
         '0-5': ['hcl', 'hydrochloric acid', 'h2so4', 'sulfuric acid'],
         '1-0': ['ascorbic acid', 'vitamin c', 'oxalic acid', 'h2c2o4'],
-        '1-1': ['ascorbic acid', 'vitamin c', 'oxalic acid', 'h2c2o4', 'formic acid', 'hcooh'],
+        '1-1': [
+          'ascorbic acid',
+          'vitamin c',
+          'oxalic acid',
+          'h2c2o4',
+          'formic acid',
+          'hcooh'
+        ],
         '1-2': ['edta', 'citric acid', 'tartaric acid', 'oxalic acid'],
-        '1-3': ['h2co3', 'carbonic acid', 'h3po4', 'phosphoric acid', 'ch3cooh', 'acetic acid'],
+        '1-3': [
+          'h2co3',
+          'carbonic acid',
+          'h3po4',
+          'phosphoric acid',
+          'ch3cooh',
+          'acetic acid'
+        ],
         '1-4': ['ascorbic acid', 'vitamin c', 'oxalic acid', 'h2c2o4'],
-        '1-5': ['citric acid', 'tartaric acid', 'salicylic acid', 'benzoic acid'],
-        '2-0': ['naoh', 'sodium hydroxide', 'koh', 'potassium hydroxide', 'naocl', 'sodium hypochlorite'],
-        '2-1': ['naoh', 'sodium hydroxide', 'koh', 'potassium hydroxide', 'lioh', 'lithium hydroxide'],
+        '1-5': [
+          'citric acid',
+          'tartaric acid',
+          'salicylic acid',
+          'benzoic acid'
+        ],
+        '2-0': [
+          'naoh',
+          'sodium hydroxide',
+          'koh',
+          'potassium hydroxide',
+          'naocl',
+          'sodium hypochlorite'
+        ],
+        '2-1': [
+          'naoh',
+          'sodium hydroxide',
+          'koh',
+          'potassium hydroxide',
+          'lioh',
+          'lithium hydroxide'
+        ],
         '2-2': ['naoh', 'sodium hydroxide', 'koh', 'potassium hydroxide'],
-        '2-3': ['naoh', 'sodium hydroxide', 'koh', 'potassium hydroxide', 'ba(oh)2', 'barium hydroxide', 'ca(oh)2', 'calcium hydroxide'],
+        '2-3': [
+          'naoh',
+          'sodium hydroxide',
+          'koh',
+          'potassium hydroxide',
+          'ba(oh)2',
+          'barium hydroxide',
+          'ca(oh)2',
+          'calcium hydroxide'
+        ],
         '2-4': ['naoh', 'sodium hydroxide', 'koh', 'potassium hydroxide'],
         '2-5': ['naoh', 'sodium hydroxide', 'koh', 'potassium hydroxide'],
-        '3-0': ['nh3', 'ammonia', 'nh4oh', 'ammonium hydroxide', 'hydrazine', 'n2h4'],
-        '3-1': ['nh3', 'ammonia', 'methylamine', 'ch3nh2', 'ethylamine', 'c2h5nh2'],
+        '3-0': [
+          'nh3',
+          'ammonia',
+          'nh4oh',
+          'ammonium hydroxide',
+          'hydrazine',
+          'n2h4'
+        ],
+        '3-1': [
+          'nh3',
+          'ammonia',
+          'methylamine',
+          'ch3nh2',
+          'ethylamine',
+          'c2h5nh2'
+        ],
         '3-2': ['nh3', 'ammonia', 'ethylenediamine', 'en', 'pyridine'],
-        '3-3': ['nh3', 'ammonia', 'nh4oh', 'ammonium hydroxide', 'mg(oh)2', 'magnesium hydroxide', 'al(oh)3', 'aluminum hydroxide'],
+        '3-3': [
+          'nh3',
+          'ammonia',
+          'nh4oh',
+          'ammonium hydroxide',
+          'mg(oh)2',
+          'magnesium hydroxide',
+          'al(oh)3',
+          'aluminum hydroxide'
+        ],
         '3-4': ['nh3', 'ammonia', 'hydrazine', 'n2h4'],
-        '3-5': ['nh3', 'ammonia', 'ethylenediamine', 'en', 'pyridine', 'imidazole'],
-        '4-0': ['acetate buffer', 'ch3cooh/ch3coo-', 'phosphate buffer', 'h2po4-/hpo42-'],
-        '4-1': ['acetate buffer', 'ch3cooh/ch3coo-', 'phosphate buffer', 'h2po4-/hpo42-'],
+        '3-5': [
+          'nh3',
+          'ammonia',
+          'ethylenediamine',
+          'en',
+          'pyridine',
+          'imidazole'
+        ],
+        '4-0': [
+          'acetate buffer',
+          'ch3cooh/ch3coo-',
+          'phosphate buffer',
+          'h2po4-/hpo42-'
+        ],
+        '4-1': [
+          'acetate buffer',
+          'ch3cooh/ch3coo-',
+          'phosphate buffer',
+          'h2po4-/hpo42-'
+        ],
         '4-2': ['edta buffer', 'phosphate buffer', 'citrate buffer'],
         '4-3': ['phosphate buffer', 'carbonate buffer', 'acetate buffer'],
-        '4-4': ['phosphate buffer', 'h2po4-/hpo42-', 'acetate buffer', 'ch3cooh/ch3coo-'],
-        '4-5': ['acetate buffer', 'phosphate buffer', 'citrate buffer', 'tris buffer'],
-        '5-0': ['h2o2', 'hydrogen peroxide', 'al2o3', 'aluminum oxide', 'zno', 'zinc oxide'],
+        '4-4': [
+          'phosphate buffer',
+          'h2po4-/hpo42-',
+          'acetate buffer',
+          'ch3cooh/ch3coo-'
+        ],
+        '4-5': [
+          'acetate buffer',
+          'phosphate buffer',
+          'citrate buffer',
+          'tris buffer'
+        ],
+        '5-0': [
+          'h2o2',
+          'hydrogen peroxide',
+          'al2o3',
+          'aluminum oxide',
+          'zno',
+          'zinc oxide'
+        ],
         '5-1': ['zn', 'zinc', 'al', 'aluminum', 'sn', 'tin', 'pb', 'lead'],
         '5-2': ['amino acids', 'glycine', 'alanine', 'histidine', 'cysteine'],
-        '5-3': ['al(oh)3', 'aluminum hydroxide', 'zn(oh)2', 'zinc hydroxide', 'cr(oh)3', 'chromium hydroxide', 'pb(oh)2', 'lead hydroxide'],
+        '5-3': [
+          'al(oh)3',
+          'aluminum hydroxide',
+          'zn(oh)2',
+          'zinc hydroxide',
+          'cr(oh)3',
+          'chromium hydroxide',
+          'pb(oh)2',
+          'lead hydroxide'
+        ],
         '5-4': ['h2o2', 'hydrogen peroxide', 'mno2', 'manganese dioxide'],
-        '5-5': ['amino acids', 'glycine', 'histidine', 'al3+', 'aluminum ion', 'zn2+', 'zinc ion', 'cysteine']
+        '5-5': [
+          'amino acids',
+          'glycine',
+          'histidine',
+          'al3+',
+          'aluminum ion',
+          'zn2+',
+          'zinc ion',
+          'cysteine'
+        ]
       };
 
       let xCategories = [];
@@ -1242,11 +1385,15 @@
                         <div class="label-row">
                           <div class="label-field">
                             <label>X-Label (Column ${x}):</label>
-                            <input type="text" id="xlabel-${x}-${y}" value="${xCategories[x]}">
+                            <input type="text" id="xlabel-${x}-${y}" value="${
+              xCategories[x]
+            }">
                           </div>
                           <div class="label-field">
                             <label>Y-Label (Row ${y}):</label>
-                            <input type="text" id="ylabel-${x}-${y}" value="${yCategories[y]}">
+                            <input type="text" id="ylabel-${x}-${y}" value="${
+              yCategories[y]
+            }">
                           </div>
                         </div>
                         <div class="answers-field">
@@ -1294,7 +1441,11 @@
         }
 
         if (inconsistent) {
-          if (!confirm('Warning: Some X or Y labels are inconsistent across cells. The labels from the first row/column will be used. Continue?')) {
+          if (
+            !confirm(
+              'Warning: Some X or Y labels are inconsistent across cells. The labels from the first row/column will be used. Continue?'
+            )
+          ) {
             return;
           }
         }
