@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chemical Connect 4 | Chemistry Game</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        touch-action: manipulation;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 1400px;
+        width: 100%;
+      }
+
+      h1 {
+        text-align: center;
+        color: #667eea;
+        margin-bottom: 10px;
+        font-size: 2.5em;
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 1.1em;
+      }
+
+      .setup-screen {
+        text-align: center;
+      }
+
+      .player-count {
+        margin-bottom: 30px;
+      }
+
+      .player-count label {
+        font-size: 1.2em;
+        color: #333;
+        margin-right: 10px;
+      }
+
+      .player-count select {
+        padding: 10px 20px;
+        font-size: 1.1em;
+        border: 2px solid #667eea;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+
+      .players-config {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-bottom: 30px;
+      }
+
+      .player-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 15px;
+        border: 3px solid #ddd;
+        min-width: 200px;
+      }
+
+      .player-card h3 {
+        margin-bottom: 15px;
+        color: #333;
+      }
+
+      .player-name-input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 2px solid #667eea;
+        border-radius: 8px;
+        font-size: 1em;
+      }
+
+      .color-options {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .color-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 3px solid #ddd;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .color-btn:hover {
+        transform: scale(1.1);
+      }
+
+      .color-btn.selected {
+        border: 3px solid #333;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+
+      .start-btn,
+      .edit-questions-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        font-size: 1.2em;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: transform 0.3s;
+        font-weight: bold;
+      }
+
+      .edit-questions-btn {
+        background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);
+      }
+
+      .start-btn:hover,
+      .edit-questions-btn:hover {
+        transform: scale(1.05);
+      }
+
+      .questions-editor {
+        display: none;
+        max-height: 70vh;
+        overflow-y: auto;
+        margin: 20px 0;
+      }
+
+      .labels-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 30px;
+      }
+
+      .label-group {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 15px;
+        border: 2px solid #667eea;
+      }
+
+      .label-group h3 {
+        color: #667eea;
+        margin-bottom: 15px;
+      }
+
+      .label-input-group {
+        margin-bottom: 15px;
+      }
+
+      .label-input-group label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #333;
+      }
+
+      .label-input-group input {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #667eea;
+        border-radius: 8px;
+        font-size: 1em;
+      }
+
+      .question-grid {
+        display: grid;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .question-item {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        border: 2px solid #ddd;
+      }
+
+      .question-item h4 {
+        color: #667eea;
+        margin-bottom: 10px;
+      }
+
+      .question-item textarea {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #667eea;
+        border-radius: 8px;
+        font-size: 0.95em;
+        min-height: 60px;
+        resize: vertical;
+      }
+
+      .editor-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+
+      .save-btn,
+      .cancel-edit-btn,
+      .reset-default-btn {
+        padding: 12px 30px;
+        font-size: 1.1em;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s;
+      }
+
+      .save-btn {
+        background: #2ecc71;
+        color: white;
+      }
+
+      .cancel-edit-btn {
+        background: #95a5a6;
+        color: white;
+      }
+
+      .reset-default-btn {
+        background: #e74c3c;
+        color: white;
+      }
+
+      .game-screen {
+        display: none;
+      }
+
+      .game-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+
+      .current-player {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .player-indicator {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: inline-block;
+        border: 2px solid #333;
+      }
+
+      .reset-btn {
+        background: #e74c3c;
+        color: white;
+        border: none;
+        padding: 10px 30px;
+        font-size: 1.1em;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .reset-btn:hover {
+        background: #c0392b;
+      }
+
+      .game-board-container {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        justify-content: center;
+      }
+
+      .board-column {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .board-and-indicators {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .y-labels-container {
+        display: grid;
+        grid-template-columns: repeat(6, 90px);
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .y-label {
+        background: #f8f9fa;
+        padding: 10px 5px;
+        border-radius: 10px;
+        font-weight: bold;
+        color: #333;
+        text-align: center;
+        border: 2px solid #764ba2;
+        font-size: 0.85em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 50px;
+      }
+
+      .x-labels {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 50px;
+      }
+
+      .x-label {
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 10px;
+        font-weight: bold;
+        color: #333;
+        text-align: center;
+        height: 90px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #667eea;
+        min-width: 140px;
+        font-size: 0.85em;
+      }
+
+      .board {
+        display: grid;
+        grid-template-columns: repeat(6, 90px);
+        grid-template-rows: repeat(6, 90px);
+        gap: 10px;
+        background: #34495e;
+        padding: 15px;
+        border-radius: 15px;
+      }
+
+      .cell {
+        background: white;
+        border-radius: 50%;
+        transition: all 0.3s;
+        border: 3px solid #2c3e50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 0.8em;
+        color: #333;
+      }
+
+      .cell.filled {
+        cursor: not-allowed;
+      }
+
+      .cell.falling {
+        animation: dropDown 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+      }
+
+      @keyframes dropDown {
+        0% {
+          transform: translateY(-600px) scale(0.8);
+          opacity: 0.5;
+        }
+        50% {
+          opacity: 1;
+        }
+        70% {
+          transform: translateY(0px) scale(1.1);
+        }
+        85% {
+          transform: translateY(-15px) scale(0.95);
+        }
+        100% {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
+      }
+
+      .column-indicator {
+        background: rgba(102, 126, 234, 0.3);
+        border-radius: 10px 10px 0 0;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #667eea;
+        height: 30px;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .column-indicator:hover {
+        background: rgba(102, 126, 234, 0.6);
+        transform: scale(1.1);
+      }
+
+      .column-indicators {
+        display: grid;
+        grid-template-columns: repeat(6, 90px);
+        gap: 10px;
+        margin-bottom: 5px;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .modal-content {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        text-align: center;
+        max-width: 500px;
+        width: 90%;
+      }
+
+      .modal-content h2 {
+        color: #667eea;
+        margin-bottom: 20px;
+        font-size: 1.8em;
+      }
+
+      .modal-content p {
+        margin-bottom: 15px;
+        font-size: 1.2em;
+        color: #333;
+        white-space: pre-line;
+      }
+
+      .answer-input {
+        width: 100%;
+        padding: 15px;
+        font-size: 1.1em;
+        border: 2px solid #667eea;
+        border-radius: 10px;
+        margin: 20px 0;
+        text-align: center;
+      }
+
+      .modal-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+      }
+
+      .submit-btn,
+      .cancel-btn {
+        padding: 12px 30px;
+        font-size: 1.1em;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: bold;
+      }
+
+      .submit-btn {
+        background: #2ecc71;
+        color: white;
+      }
+
+      .submit-btn:hover {
+        background: #27ae60;
+      }
+
+      .cancel-btn {
+        background: #95a5a6;
+        color: white;
+      }
+
+      .cancel-btn:hover {
+        background: #7f8c8d;
+      }
+
+      .winner-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+      }
+
+      .winner-content {
+        background: white;
+        padding: 50px;
+        border-radius: 20px;
+        text-align: center;
+        animation: bounce 0.5s;
+      }
+
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+      }
+
+      .winner-content h2 {
+        color: #f39c12;
+        font-size: 3em;
+        margin-bottom: 20px;
+      }
+
+      .winner-content .winner-color {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin: 20px auto;
+        border: 5px solid #333;
+      }
+
+      .play-again-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 15px 50px;
+        font-size: 1.3em;
+        border-radius: 50px;
+        cursor: pointer;
+        margin-top: 20px;
+        font-weight: bold;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 15px;
+        }
+
+        h1 {
+          font-size: 1.5em;
+          margin-bottom: 5px;
+        }
+
+        .subtitle {
+          font-size: 0.9em;
+          margin-bottom: 20px;
+        }
+
+        .labels-section {
+          grid-template-columns: 1fr;
+        }
+
+        .player-count label {
+          font-size: 1em;
+        }
+
+        .player-count select {
+          padding: 8px 15px;
+          font-size: 1em;
+        }
+
+        .player-card {
+          min-width: 150px;
+          padding: 15px;
+        }
+
+        .player-card h3 {
+          font-size: 1em;
+        }
+
+        .start-btn,
+        .edit-questions-btn {
+          padding: 12px 25px;
+          font-size: 1em;
+        }
+
+        .game-info {
+          flex-direction: column;
+          gap: 10px;
+          margin-bottom: 15px;
+        }
+
+        .current-player {
+          font-size: 1em;
+        }
+
+        .reset-btn {
+          padding: 8px 20px;
+          font-size: 1em;
+        }
+
+        .game-board-container {
+          flex-direction: column;
+          gap: 10px;
+          overflow-x: auto;
+        }
+
+        .x-labels {
+          flex-direction: row;
+          margin-top: 0;
+          margin-bottom: 10px;
+          overflow-x: auto;
+        }
+
+        .x-label {
+          min-width: 50px;
+          width: 50px;
+          height: 50px;
+          font-size: 0.6em;
+          padding: 5px;
+        }
+
+        .board {
+          grid-template-columns: repeat(6, 50px);
+          grid-template-rows: repeat(6, 50px);
+          gap: 6px;
+          padding: 10px;
+        }
+
+        .column-indicators,
+        .y-labels-container {
+          grid-template-columns: repeat(6, 50px);
+          gap: 6px;
+        }
+
+        .column-indicator {
+          height: 25px;
+          font-size: 0.8em;
+        }
+
+        .y-label {
+          font-size: 0.6em;
+          padding: 5px;
+          height: 40px;
+        }
+
+        .cell {
+          font-size: 0.65em;
+        }
+
+        .modal-content {
+          padding: 25px;
+          width: 95%;
+        }
+
+        .modal-content h2 {
+          font-size: 1.4em;
+        }
+
+        .modal-content p {
+          font-size: 1em;
+        }
+
+        .answer-input {
+          padding: 12px;
+          font-size: 1em;
+        }
+
+        .submit-btn,
+        .cancel-btn {
+          padding: 10px 20px;
+          font-size: 1em;
+        }
+
+        .winner-content {
+          padding: 30px 20px;
+        }
+
+        .winner-content h2 {
+          font-size: 2em;
+        }
+
+        .winner-content .winner-color {
+          width: 80px;
+          height: 80px;
+        }
+
+        .play-again-btn {
+          padding: 12px 35px;
+          font-size: 1.1em;
+        }
+
+        .questions-editor {
+          max-height: 60vh;
+        }
+
+        .label-group {
+          padding: 15px;
+        }
+
+        .question-item {
+          padding: 12px;
+        }
+
+        .question-item h4 {
+          font-size: 0.9em;
+        }
+
+        .question-item textarea {
+          font-size: 0.85em;
+          min-height: 50px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .container {
+          padding: 10px;
+        }
+
+        h1 {
+          font-size: 1.2em;
+        }
+
+        .subtitle {
+          font-size: 0.8em;
+        }
+
+        .board {
+          grid-template-columns: repeat(6, 45px);
+          grid-template-rows: repeat(6, 45px);
+          gap: 5px;
+          padding: 8px;
+        }
+
+        .column-indicators,
+        .y-labels-container {
+          grid-template-columns: repeat(6, 45px);
+          gap: 5px;
+        }
+
+        .x-label {
+          min-width: 45px;
+          width: 45px;
+          height: 45px;
+          font-size: 0.55em;
+        }
+
+        .y-label {
+          font-size: 0.55em;
+          height: 35px;
+        }
+
+        .cell {
+          font-size: 0.6em;
+        }
+
+        .player-card {
+          min-width: 140px;
+        }
+
+        .color-btn {
+          width: 35px;
+          height: 35px;
+        }
+
+        .modal-content {
+          padding: 20px;
+        }
+
+        .modal-content h2 {
+          font-size: 1.2em;
+        }
+
+        .modal-content p {
+          font-size: 0.9em;
+        }
+
+        .answer-input {
+          padding: 10px;
+          font-size: 0.95em;
+        }
+
+        .winner-content {
+          padding: 25px 15px;
+        }
+
+        .winner-content h2 {
+          font-size: 1.5em;
+        }
+
+        .winner-content .winner-color {
+          width: 60px;
+          height: 60px;
+        }
+
+        .play-again-btn {
+          padding: 10px 25px;
+          font-size: 1em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🧪 Chemical Connect 4</h1>
+      <p class="subtitle">Connect 4 Chemistry Compounds!</p>
+
+      <div class="setup-screen" id="setupScreen">
+        <div class="player-count">
+          <label for="playerCount">Number of Players:</label>
+          <select id="playerCount">
+            <option value="2">2 Players</option>
+            <option value="3">3 Players</option>
+            <option value="4">4 Players</option>
+          </select>
+        </div>
+
+        <div class="players-config" id="playersConfig"></div>
+
+        <div class="action-buttons">
+          <button class="start-btn" onclick="startGame()">Start Game 🚀</button>
+          <button class="edit-questions-btn" onclick="toggleQuestionEditor()">
+            Edit Grid & Questions 📝
+          </button>
+        </div>
+
+        <div class="questions-editor" id="questionsEditor">
+          <h2 style="color: #667eea; margin-bottom: 20px">
+            Edit Grid Labels & Answers
+          </h2>
+
+          <div class="labels-section">
+            <div class="label-group">
+              <h3>X-Axis Labels (Left Side)</h3>
+              <div id="xLabelsEditor"></div>
+            </div>
+            <div class="label-group">
+              <h3>Y-Axis Labels (Bottom)</h3>
+              <div id="yLabelsEditor"></div>
+            </div>
+          </div>
+
+          <h3 style="color: #667eea; margin-bottom: 15px">Cell Answers</h3>
+          <p style="color: #666; margin-bottom: 20px">
+            Enter valid answers separated by commas (e.g., H2O, water, ice)
+          </p>
+          <div class="question-grid" id="questionGrid"></div>
+
+          <div class="editor-buttons">
+            <button class="save-btn" onclick="saveQuestions()">
+              Save All Changes ✓
+            </button>
+            <button class="reset-default-btn" onclick="resetToDefault()">
+              Reset to Default
+            </button>
+            <button class="cancel-edit-btn" onclick="toggleQuestionEditor()">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-screen" id="gameScreen">
+        <div class="game-info">
+          <div class="current-player">
+            <span>Current Turn:</span>
+            <span class="player-indicator" id="currentPlayerIndicator"></span>
+            <span id="currentPlayerName"></span>
+          </div>
+          <button class="reset-btn" onclick="resetGame()">New Game</button>
+        </div>
+
+        <div class="game-board-container">
+          <div class="x-labels" id="xLabels"></div>
+          <div class="board-column">
+            <div class="board-and-indicators">
+              <div class="column-indicators" id="columnIndicators"></div>
+              <div class="board" id="gameBoard"></div>
+            </div>
+            <div class="y-labels-container" id="yLabels"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal" id="answerModal">
+        <div class="modal-content">
+          <h2>Answer the Question</h2>
+          <p id="questionText"></p>
+          <input
+            type="text"
+            class="answer-input"
+            id="answerInput"
+            placeholder="Type your answer here..."
+          />
+          <div class="modal-buttons">
+            <button class="submit-btn" onclick="submitAnswer()">
+              Submit ✓
+            </button>
+            <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="winner-modal" id="winnerModal">
+        <div class="winner-content">
+          <h2>🎉 Congratulations! 🎉</h2>
+          <p style="font-size: 1.5em; margin: 20px 0">Winner:</p>
+          <div class="winner-color" id="winnerColor"></div>
+          <p style="font-size: 1.3em" id="winnerName"></p>
+          <button class="play-again-btn" onclick="resetGame()">
+            Play Again
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const availableColors = [
+        '#e74c3c',
+        '#3498db',
+        '#2ecc71',
+        '#f39c12',
+        '#9b59b6',
+        '#1abc9c'
+      ];
+
+      const defaultXCategories = [
+        'Ionic Bond',
+        'Covalent Bond',
+        'Metallic Bond',
+        'Hydrogen Bond',
+        'Polar',
+        'Non-Polar'
+      ];
+      const defaultYCategories = [
+        'Water Soluble',
+        'Conducts Electricity',
+        'High Boiling Point',
+        'Solid at Room Temp',
+        'Gas at Room Temp',
+        'Liquid at Room Temp'
+      ];
+
+      const defaultAnswers = {
+        '0-0': [
+          'nacl',
+          'sodium chloride',
+          'table salt',
+          'kcl',
+          'potassium chloride'
+        ],
+        '0-1': [
+          'nacl',
+          'sodium chloride',
+          'kcl',
+          'potassium chloride',
+          'mgcl2',
+          'magnesium chloride',
+          'cacl2',
+          'calcium chloride'
+        ],
+        '0-2': [
+          'nacl',
+          'sodium chloride',
+          'mgo',
+          'magnesium oxide',
+          'cao',
+          'calcium oxide'
+        ],
+        '0-3': [
+          'nacl',
+          'sodium chloride',
+          'mgo',
+          'magnesium oxide',
+          'cao',
+          'calcium oxide',
+          'kcl',
+          'potassium chloride'
+        ],
+        '0-4': ['nh4cl', 'ammonium chloride', 'no2', 'nitrogen dioxide'],
+        '0-5': ['hg2cl2', 'mercury chloride', 'nabr', 'sodium bromide'],
+        '1-0': [
+          'c6h12o6',
+          'glucose',
+          'sugar',
+          'c12h22o11',
+          'sucrose',
+          'ethanol',
+          'c2h5oh'
+        ],
+        '1-1': [
+          'nacl solution',
+          'hcl',
+          'hydrochloric acid',
+          'h2so4',
+          'sulfuric acid'
+        ],
+        '1-2': ['sio2', 'silicon dioxide', 'sand', 'h2o', 'water'],
+        '1-3': [
+          'c',
+          'diamond',
+          'graphite',
+          'carbon',
+          'sio2',
+          'silicon dioxide',
+          'i2',
+          'iodine',
+          's8',
+          'sulfur'
+        ],
+        '1-4': [
+          'co2',
+          'carbon dioxide',
+          'o2',
+          'oxygen',
+          'n2',
+          'nitrogen',
+          'h2',
+          'hydrogen',
+          'cl2',
+          'chlorine'
+        ],
+        '1-5': ['h2o', 'water', 'ethanol', 'c2h5oh', 'acetic acid', 'ch3cooh'],
+        '2-0': ['na', 'sodium', 'k', 'potassium'],
+        '2-1': [
+          'fe',
+          'iron',
+          'cu',
+          'copper',
+          'al',
+          'aluminum',
+          'aluminium',
+          'ag',
+          'silver',
+          'au',
+          'gold',
+          'na',
+          'sodium'
+        ],
+        '2-2': [
+          'fe',
+          'iron',
+          'cu',
+          'copper',
+          'al',
+          'aluminum',
+          'aluminium',
+          'ag',
+          'silver',
+          'au',
+          'gold',
+          'w',
+          'tungsten'
+        ],
+        '2-3': [
+          'fe',
+          'iron',
+          'cu',
+          'copper',
+          'al',
+          'aluminum',
+          'aluminium',
+          'ag',
+          'silver',
+          'au',
+          'gold',
+          'na',
+          'sodium',
+          'mg',
+          'magnesium'
+        ],
+        '2-4': [],
+        '2-5': ['hg', 'mercury'],
+        '3-0': ['h2o', 'water', 'ethanol', 'c2h5oh', 'nh3', 'ammonia'],
+        '3-1': ['h2o', 'water', 'hf', 'hydrogen fluoride'],
+        '3-2': ['h2o', 'water', 'ethanol', 'c2h5oh', 'glycerol'],
+        '3-3': ['h2o', 'water', 'ice', 'nh3', 'ammonia'],
+        '3-4': ['nh3', 'ammonia', 'hf', 'hydrogen fluoride'],
+        '3-5': ['h2o', 'water', 'ethanol', 'c2h5oh', 'ch3oh', 'methanol'],
+        '4-0': [
+          'hcl',
+          'hydrochloric acid',
+          'nh3',
+          'ammonia',
+          'h2o',
+          'water',
+          'ethanol',
+          'c2h5oh'
+        ],
+        '4-1': ['hcl', 'hydrochloric acid', 'h2o', 'water'],
+        '4-2': [
+          'hcl',
+          'hydrochloric acid',
+          'h2o',
+          'water',
+          'h2so4',
+          'sulfuric acid'
+        ],
+        '4-3': ['h2o', 'water', 'ice', 'nh3', 'ammonia'],
+        '4-4': [
+          'nh3',
+          'ammonia',
+          'hcl',
+          'hydrochloric acid',
+          'so2',
+          'sulfur dioxide',
+          'h2s',
+          'hydrogen sulfide'
+        ],
+        '4-5': ['h2o', 'water', 'ethanol', 'c2h5oh', 'acetic acid', 'ch3cooh'],
+        '5-0': ['oil', 'hexane', 'c6h14', 'benzene', 'c6h6'],
+        '5-1': ['graphite', 'c'],
+        '5-2': ['diamond', 'c', 'sio2', 'silicon dioxide'],
+        '5-3': [
+          'i2',
+          'iodine',
+          's8',
+          'sulfur',
+          'c',
+          'diamond',
+          'graphite',
+          'p4',
+          'phosphorus'
+        ],
+        '5-4': [
+          'o2',
+          'oxygen',
+          'n2',
+          'nitrogen',
+          'cl2',
+          'chlorine',
+          'co2',
+          'carbon dioxide',
+          'ch4',
+          'methane'
+        ],
+        '5-5': [
+          'br2',
+          'bromine',
+          'ccl4',
+          'carbon tetrachloride',
+          'benzene',
+          'c6h6'
+        ]
+      };
+
+      let xCategories = [];
+      let yCategories = [];
+      let validAnswers = {};
+      let players = [];
+      let currentPlayerIndex = 0;
+      let board = Array(6)
+        .fill(null)
+        .map(() => Array(6).fill(null));
+      let selectedColumn = null;
+
+      function loadData() {
+        const savedX = localStorage.getItem('chemConnect4XLabels');
+        const savedY = localStorage.getItem('chemConnect4YLabels');
+        const savedAnswers = localStorage.getItem('chemConnect4Answers');
+
+        xCategories = savedX ? JSON.parse(savedX) : [...defaultXCategories];
+        yCategories = savedY ? JSON.parse(savedY) : [...defaultYCategories];
+        validAnswers = savedAnswers
+          ? JSON.parse(savedAnswers)
+          : JSON.parse(JSON.stringify(defaultAnswers));
+
+        console.log('Loaded data:', { xCategories, yCategories, validAnswers });
+      }
+
+      function saveData() {
+        localStorage.setItem(
+          'chemConnect4XLabels',
+          JSON.stringify(xCategories)
+        );
+        localStorage.setItem(
+          'chemConnect4YLabels',
+          JSON.stringify(yCategories)
+        );
+        localStorage.setItem(
+          'chemConnect4Answers',
+          JSON.stringify(validAnswers)
+        );
+        console.log('Saved data:', { xCategories, yCategories, validAnswers });
+      }
+
+      loadData();
+
+      function initPlayerSetup() {
+        const playerCount = parseInt(
+          document.getElementById('playerCount').value
+        );
+        const container = document.getElementById('playersConfig');
+        container.innerHTML = '';
+        players = [];
+
+        for (let i = 0; i < playerCount; i++) {
+          const card = document.createElement('div');
+          card.className = 'player-card';
+          card.innerHTML = `
+                    <h3>Player ${i + 1}</h3>
+                    <input type="text" class="player-name-input" id="playerName${i}" placeholder="Enter name..." value="Player ${
+            i + 1
+          }">
+                    <div class="color-options" id="colorOptions${i}">
+                        ${availableColors
+                          .map(
+                            (color) => `
+                            <div class="color-btn" style="background: ${color}"
+                                 data-color="${color}"
+                                 onclick="selectColor(${i}, '${color}')"></div>
+                        `
+                          )
+                          .join('')}
+                    </div>
+                `;
+          container.appendChild(card);
+        }
+
+        for (let i = 0; i < playerCount; i++) {
+          selectColor(i, availableColors[i]);
+        }
+      }
+
+      function selectColor(playerIndex, color) {
+        const colorTaken = players.some(
+          (p) => p.id !== playerIndex && p.color === color
+        );
+        if (colorTaken) {
+          alert('This color is already taken! Please choose another.');
+          return;
+        }
+
+        const colorOptions = document.getElementById(
+          `colorOptions${playerIndex}`
+        );
+        if (!colorOptions) return;
+
+        colorOptions
+          .querySelectorAll('.color-btn')
+          .forEach((btn) => btn.classList.remove('selected'));
+
+        const selectedBtn = colorOptions.querySelector(
+          `[data-color="${color}"]`
+        );
+        if (selectedBtn) selectedBtn.classList.add('selected');
+
+        const nameInput = document.getElementById(`playerName${playerIndex}`);
+        const playerName = nameInput
+          ? nameInput.value.trim() || `Player ${playerIndex + 1}`
+          : `Player ${playerIndex + 1}`;
+
+        const existingPlayerIndex = players.findIndex(
+          (p) => p.id === playerIndex
+        );
+        if (existingPlayerIndex !== -1) {
+          players[existingPlayerIndex].color = color;
+          players[existingPlayerIndex].name = playerName;
+        } else {
+          players.push({ id: playerIndex, name: playerName, color: color });
+        }
+      }
+
+      function toggleQuestionEditor() {
+        const editor = document.getElementById('questionsEditor');
+        const isVisible = editor.style.display === 'block';
+
+        if (!isVisible) {
+          renderQuestionEditor();
+          editor.style.display = 'block';
+        } else {
+          editor.style.display = 'none';
+        }
+      }
+
+      function renderQuestionEditor() {
+        const xEditor = document.getElementById('xLabelsEditor');
+        xEditor.innerHTML = '';
+        for (let i = 0; i < 6; i++) {
+          const group = document.createElement('div');
+          group.className = 'label-input-group';
+          group.innerHTML = `
+                    <label>X-Label ${i}:</label>
+                    <input type="text" id="xlabel-${i}" value="${xCategories[i]}">
+                `;
+          xEditor.appendChild(group);
+        }
+
+        const yEditor = document.getElementById('yLabelsEditor');
+        yEditor.innerHTML = '';
+        for (let i = 0; i < 6; i++) {
+          const group = document.createElement('div');
+          group.className = 'label-input-group';
+          group.innerHTML = `
+                    <label>Y-Label ${i}:</label>
+                    <input type="text" id="ylabel-${i}" value="${yCategories[i]}">
+                `;
+          yEditor.appendChild(group);
+        }
+
+        const grid = document.getElementById('questionGrid');
+        grid.innerHTML = '';
+
+        for (let x = 0; x < 6; x++) {
+          for (let y = 0; y < 6; y++) {
+            const key = `${x}-${y}`;
+            const answers = validAnswers[key] || [];
+
+            const item = document.createElement('div');
+            item.className = 'question-item';
+            item.innerHTML = `
+                        <h4>Cell (${x}, ${y}): <span id="cell-label-${x}-${y}">${
+              xCategories[x]
+            } + ${yCategories[y]}</span></h4>
+                        <textarea id="answers-${key}" placeholder="Enter answers separated by commas...">${answers.join(
+              ', '
+            )}</textarea>
+                    `;
+            grid.appendChild(item);
+          }
+        }
+      }
+
+      function saveQuestions() {
+        for (let i = 0; i < 6; i++) {
+          const input = document.getElementById(`xlabel-${i}`);
+          if (input) xCategories[i] = input.value.trim();
+        }
+
+        for (let i = 0; i < 6; i++) {
+          const input = document.getElementById(`ylabel-${i}`);
+          if (input) yCategories[i] = input.value.trim();
+        }
+
+        for (let x = 0; x < 6; x++) {
+          for (let y = 0; y < 6; y++) {
+            const key = `${x}-${y}`;
+            const textarea = document.getElementById(`answers-${key}`);
+            if (textarea) {
+              const value = textarea.value.trim();
+              validAnswers[key] = value
+                ? value
+                    .split(',')
+                    .map((a) => a.trim().toLowerCase())
+                    .filter((a) => a.length > 0)
+                : [];
+            }
+          }
+        }
+
+        saveData();
+        alert('All changes saved successfully! ✓');
+        toggleQuestionEditor();
+      }
+
+      function resetToDefault() {
+        if (
+          confirm(
+            'Are you sure you want to reset everything to default values?'
+          )
+        ) {
+          xCategories = [...defaultXCategories];
+          yCategories = [...defaultYCategories];
+          validAnswers = JSON.parse(JSON.stringify(defaultAnswers));
+          saveData();
+          renderQuestionEditor();
+          alert('Reset to default values! ✓');
+        }
+      }
+
+      function startGame() {
+        const playerCount = parseInt(
+          document.getElementById('playerCount').value
+        );
+
+        for (let i = 0; i < playerCount; i++) {
+          const nameInput = document.getElementById(`playerName${i}`);
+          const playerName = nameInput
+            ? nameInput.value.trim() || `Player ${i + 1}`
+            : `Player ${i + 1}`;
+          const player = players.find((p) => p.id === i);
+          if (player) player.name = playerName;
+        }
+
+        if (players.length !== playerCount) {
+          alert('Please select colors for all players');
+          return;
+        }
+
+        players.sort((a, b) => a.id - b.id);
+        document.getElementById('setupScreen').style.display = 'none';
+        document.getElementById('gameScreen').style.display = 'block';
+        initGame();
+      }
+
+      function initGame() {
+        board = Array(6)
+          .fill(null)
+          .map(() => Array(6).fill(null));
+        currentPlayerIndex = 0;
+
+        const boardElement = document.getElementById('gameBoard');
+        boardElement.innerHTML = '';
+
+        for (let y = 0; y < 6; y++) {
+          for (let x = 0; x < 6; x++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.setAttribute('data-x', x);
+            cell.setAttribute('data-y', y);
+            boardElement.appendChild(cell);
+          }
+        }
+
+        const indicatorsElement = document.getElementById('columnIndicators');
+        indicatorsElement.innerHTML = '';
+        for (let x = 0; x < 6; x++) {
+          const indicator = document.createElement('div');
+          indicator.className = 'column-indicator';
+          indicator.textContent = '▼';
+          indicator.onclick = () => dropPiece(x);
+          indicatorsElement.appendChild(indicator);
+        }
+
+        document.getElementById('yLabels').innerHTML = yCategories
+          .map((cat) => `<div class="y-label">${cat}</div>`)
+          .join('');
+        document.getElementById('xLabels').innerHTML = xCategories
+          .map((cat) => `<div class="x-label">${cat}</div>`)
+          .join('');
+
+        updateCurrentPlayer();
+      }
+
+      function updateCurrentPlayer() {
+        const player = players[currentPlayerIndex];
+        document.getElementById('currentPlayerIndicator').style.background =
+          player.color;
+        document.getElementById('currentPlayerName').textContent = player.name;
+      }
+
+      function dropPiece(column) {
+        let targetRow = -1;
+        for (let y = 5; y >= 0; y--) {
+          if (board[y][column] === null) {
+            targetRow = y;
+            break;
+          }
+        }
+
+        if (targetRow === -1) {
+          alert('This column is full! Choose another column.');
+          return;
+        }
+
+        selectedColumn = { x: column, y: targetRow };
+
+        const xCat = xCategories[column];
+        const yCat = yCategories[targetRow];
+        document.getElementById(
+          'questionText'
+        ).textContent = `Enter a chemical compound or element that satisfies both:\n"${xCat}" AND "${yCat}"`;
+        document.getElementById('answerInput').value = '';
+        document.getElementById('answerModal').style.display = 'flex';
+        document.getElementById('answerInput').focus();
+      }
+
+      function submitAnswer() {
+        if (!selectedColumn) return;
+
+        const answer = document
+          .getElementById('answerInput')
+          .value.trim()
+          .toLowerCase();
+        if (answer === '') {
+          alert('Please enter an answer!');
+          return;
+        }
+
+        const targetCell = { x: selectedColumn.x, y: selectedColumn.y };
+        const key = `${targetCell.x}-${targetCell.y}`;
+        const validAnswersForCell = validAnswers[key] || [];
+
+        console.log('=== ANSWER VALIDATION ===');
+        console.log('User answer:', answer);
+        console.log('Cell key:', key);
+        console.log('Valid answers:', validAnswersForCell);
+
+        let isCorrect = false;
+
+        if (validAnswersForCell.length === 0) {
+          console.log('No answers configured - accepting any answer');
+          isCorrect = true;
+        } else {
+          for (let validAnswer of validAnswersForCell) {
+            const validLower = validAnswer.toLowerCase().trim();
+            const answerLower = answer.toLowerCase().trim();
+
+            console.log(`Comparing "${answerLower}" with "${validLower}"`);
+
+            if (
+              answerLower === validLower ||
+              answerLower.includes(validLower) ||
+              validLower.includes(answerLower)
+            ) {
+              console.log('MATCH FOUND!');
+              isCorrect = true;
+              break;
+            }
+          }
+        }
+
+        console.log('Final result:', isCorrect ? 'CORRECT' : 'WRONG');
+        console.log('========================');
+
+        closeModal();
+
+        if (isCorrect) {
+          const player = players[currentPlayerIndex];
+          board[targetCell.y][targetCell.x] = currentPlayerIndex;
+
+          const cellElement = document.querySelector(
+            `#gameBoard [data-x="${targetCell.x}"][data-y="${targetCell.y}"]`
+          );
+          if (!cellElement) return;
+
+          cellElement.classList.add('falling');
+          cellElement.style.background = player.color;
+          cellElement.classList.add('filled');
+          cellElement.textContent = answer.toUpperCase().substring(0, 6);
+          cellElement.style.color = 'white';
+          cellElement.style.fontWeight = 'bold';
+
+          setTimeout(() => {
+            cellElement.classList.remove('falling');
+
+            if (checkWinner(targetCell.x, targetCell.y)) {
+              setTimeout(() => showWinner(), 300);
+              return;
+            }
+
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+            updateCurrentPlayer();
+          }, 800);
+        } else {
+          alert('Wrong answer! Moving to next player.');
+          currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+          updateCurrentPlayer();
+        }
+      }
+
+      function closeModal() {
+        document.getElementById('answerModal').style.display = 'none';
+        selectedColumn = null;
+      }
+
+      function checkWinner(lastX, lastY) {
+        const player = currentPlayerIndex;
+
+        let count = 1;
+        for (let x = lastX - 1; x >= 0; x--) {
+          if (board[lastY][x] === player) count++;
+          else break;
+        }
+        for (let x = lastX + 1; x < 6; x++) {
+          if (board[lastY][x] === player) count++;
+          else break;
+        }
+        if (count >= 4) return true;
+
+        count = 1;
+        for (let y = lastY - 1; y >= 0; y--) {
+          if (board[y][lastX] === player) count++;
+          else break;
+        }
+        for (let y = lastY + 1; y < 6; y++) {
+          if (board[y][lastX] === player) count++;
+          else break;
+        }
+        if (count >= 4) return true;
+
+        count = 1;
+        for (let i = 1; lastX - i >= 0 && lastY - i >= 0; i++) {
+          if (board[lastY - i][lastX - i] === player) count++;
+          else break;
+        }
+        for (let i = 1; lastX + i < 6 && lastY + i < 6; i++) {
+          if (board[lastY + i][lastX + i] === player) count++;
+          else break;
+        }
+        if (count >= 4) return true;
+
+        count = 1;
+        for (let i = 1; lastX + i < 6 && lastY - i >= 0; i++) {
+          if (board[lastY - i][lastX + i] === player) count++;
+          else break;
+        }
+        for (let i = 1; lastX - i >= 0 && lastY + i < 6; i++) {
+          if (board[lastY + i][lastX - i] === player) count++;
+          else break;
+        }
+        if (count >= 4) return true;
+
+        return false;
+      }
+
+      function showWinner() {
+        const player = players[currentPlayerIndex];
+        document.getElementById('winnerColor').style.background = player.color;
+        document.getElementById('winnerName').textContent = player.name;
+        document.getElementById('winnerModal').style.display = 'flex';
+      }
+
+      function resetGame() {
+        document.getElementById('winnerModal').style.display = 'none';
+        document.getElementById('setupScreen').style.display = 'block';
+        document.getElementById('gameScreen').style.display = 'none';
+        players = [];
+        initPlayerSetup();
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        initPlayerSetup();
+        document
+          .getElementById('answerInput')
+          .addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') submitAnswer();
+          });
+        document
+          .getElementById('playerCount')
+          .addEventListener('change', initPlayerSetup);
+      });
+    </script>
+  </body>
+</html>
