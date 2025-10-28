@@ -11,6 +11,11 @@
         box-sizing: border-box;
       }
 
+      html {
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+      }
+
       body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -20,6 +25,8 @@
         align-items: center;
         padding: 20px;
         touch-action: manipulation;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
 
       .container {
@@ -157,6 +164,8 @@
         max-height: 70vh;
         overflow-y: auto;
         margin: 20px 0;
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
       }
 
       .labels-section {
@@ -310,17 +319,23 @@
         align-items: flex-start;
         gap: 10px;
         justify-content: center;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
       }
 
       .board-column {
         display: flex;
         flex-direction: column;
         gap: 10px;
+        align-items: center;
       }
 
       .board-and-indicators {
         display: flex;
         flex-direction: column;
+        width: fit-content;
       }
 
       .y-labels-container {
@@ -457,6 +472,8 @@
         justify-content: center;
         align-items: center;
         z-index: 1000;
+        padding: 20px;
+        overflow-y: auto;
       }
 
       .modal-content {
@@ -466,6 +483,8 @@
         text-align: center;
         max-width: 500px;
         width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
       }
 
       .modal-content h2 {
@@ -537,6 +556,8 @@
         justify-content: center;
         align-items: center;
         z-index: 2000;
+        padding: 20px;
+        overflow-y: auto;
       }
 
       .winner-content {
@@ -545,6 +566,9 @@
         border-radius: 20px;
         text-align: center;
         animation: bounce 0.5s;
+        max-width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
       }
 
       @keyframes bounce {
@@ -645,6 +669,7 @@
           flex-direction: column;
           gap: 10px;
           overflow-x: auto;
+          align-items: center;
         }
 
         .x-labels {
@@ -652,14 +677,18 @@
           margin-top: 0;
           margin-bottom: 10px;
           overflow-x: auto;
+          width: 100%;
+          max-width: fit-content;
+          -webkit-overflow-scrolling: touch;
         }
 
         .x-label {
           min-width: 50px;
           width: 50px;
           height: 50px;
-          font-size: 0.6em;
+          font-size: 0.65em;
           padding: 5px;
+          flex-shrink: 0;
         }
 
         .board {
@@ -667,12 +696,19 @@
           grid-template-rows: repeat(6, 50px);
           gap: 6px;
           padding: 10px;
+          margin: 0 auto;
+        }
+
+        .board-column {
+          width: fit-content;
+          margin: 0 auto;
         }
 
         .column-indicators,
         .y-labels-container {
           grid-template-columns: repeat(6, 50px);
           gap: 6px;
+          width: fit-content;
         }
 
         .column-indicator {
@@ -681,7 +717,7 @@
         }
 
         .y-label {
-          font-size: 0.6em;
+          font-size: 0.65em;
           padding: 5px;
           height: 40px;
         }
@@ -772,23 +808,31 @@
           grid-template-rows: repeat(6, 45px);
           gap: 5px;
           padding: 8px;
+          margin: 0 auto;
+        }
+
+        .board-column {
+          width: fit-content;
+          margin: 0 auto;
         }
 
         .column-indicators,
         .y-labels-container {
           grid-template-columns: repeat(6, 45px);
           gap: 5px;
+          width: fit-content;
         }
 
         .x-label {
           min-width: 45px;
           width: 45px;
           height: 45px;
-          font-size: 0.55em;
+          font-size: 0.58em;
+          flex-shrink: 0;
         }
 
         .y-label {
-          font-size: 0.55em;
+          font-size: 0.58em;
           height: 35px;
         }
 
@@ -838,6 +882,36 @@
         .play-again-btn {
           padding: 10px 25px;
           font-size: 1em;
+        }
+      }
+
+      @media (max-width: 768px) and (orientation: landscape) {
+        body {
+          padding: 10px;
+        }
+
+        .container {
+          padding: 10px;
+          max-height: 90vh;
+          overflow-y: auto;
+        }
+
+        h1 {
+          font-size: 1.3em;
+          margin-bottom: 5px;
+        }
+
+        .subtitle {
+          font-size: 0.85em;
+          margin-bottom: 10px;
+        }
+
+        .game-info {
+          margin-bottom: 10px;
+        }
+
+        .game-board-container {
+          max-height: calc(90vh - 100px);
         }
       }
     </style>
