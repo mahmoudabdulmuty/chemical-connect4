@@ -1042,204 +1042,112 @@
         '#1abc9c'
       ];
 
+      // COLUMNS (Titrants)
       const defaultXCategories = [
-        'Strong Acid (pKa < 0)',
-        'Weak Acid (pKa > 4)',
-        'Strong Base (pKb < 0)',
-        'Weak Base (pKb > 4)',
-        'Buffer System',
-        'Amphoteric'
+        'KMnO4',
+        'K2Cr2O7',
+        'Ce(SO4)2',
+        'I2',
+        'KIO3',
+        'KBrO3'
       ];
+
+      // ROWS (Questions)
+      // Row 0 is TOP (Hardest/Last), Row 5 is BOTTOM (Easiest/First)
       const defaultYCategories = [
-        'Oxidizing Agent',
-        'Reducing Agent',
-        'Chelating Agent',
-        'Precipitation Reaction',
-        'Redox Reaction',
-        'Complexation Reaction'
+        'Does this titrant face auto-decomposition?', // Row 0 (Top)
+        'What is the application of', // Row 1
+        'What is the color of', // Row 2
+        'What is the type of indicator used with', // Row 3
+        'What is the final reduction product of', // Row 4
+        'Is this titrant considered a 1ry standard' // Row 5 (Bottom - First Question)
       ];
 
+      // ANSWERS (Mapped to new reversed rows)
       const defaultAnswers = {
-        '0-0': [
-          'hno3',
-          'nitric acid',
-          'h2so4',
-          'sulfuric acid',
-          'hclo4',
-          'perchloric acid',
-          'kmno4',
-          'potassium permanganate'
-        ],
-        '0-1': ['hi', 'hydroiodic acid', 'hbr', 'hydrobromic acid'],
-        '0-2': ['edta', 'ethylenediaminetetraacetic acid'],
-        '0-3': [
-          'h2so4',
-          'sulfuric acid',
-          'hcl',
-          'hydrochloric acid',
-          'baso4',
-          'barium sulfate',
-          'agcl',
-          'silver chloride'
-        ],
-        '0-4': [
-          'hno3',
-          'nitric acid',
-          'h2so4',
-          'sulfuric acid',
-          'hclo4',
-          'perchloric acid'
-        ],
-        '0-5': ['hcl', 'hydrochloric acid', 'h2so4', 'sulfuric acid'],
-        '1-0': ['ascorbic acid', 'vitamin c', 'oxalic acid', 'h2c2o4'],
-        '1-1': [
-          'ascorbic acid',
-          'vitamin c',
-          'oxalic acid',
-          'h2c2o4',
-          'formic acid',
-          'hcooh'
-        ],
-        '1-2': ['edta', 'citric acid', 'tartaric acid', 'oxalic acid'],
-        '1-3': [
-          'h2co3',
-          'carbonic acid',
-          'h3po4',
-          'phosphoric acid',
-          'ch3cooh',
-          'acetic acid'
-        ],
-        '1-4': ['ascorbic acid', 'vitamin c', 'oxalic acid', 'h2c2o4'],
-        '1-5': [
-          'citric acid',
-          'tartaric acid',
-          'salicylic acid',
-          'benzoic acid'
-        ],
-        '2-0': [
-          'naoh',
-          'sodium hydroxide',
-          'koh',
-          'potassium hydroxide',
-          'naocl',
-          'sodium hypochlorite'
-        ],
-        '2-1': [
-          'naoh',
-          'sodium hydroxide',
-          'koh',
-          'potassium hydroxide',
-          'lioh',
-          'lithium hydroxide'
-        ],
-        '2-2': ['naoh', 'sodium hydroxide', 'koh', 'potassium hydroxide'],
-        '2-3': [
-          'naoh',
-          'sodium hydroxide',
-          'koh',
-          'potassium hydroxide',
-          'ba(oh)2',
-          'barium hydroxide',
-          'ca(oh)2',
-          'calcium hydroxide'
-        ],
-        '2-4': ['naoh', 'sodium hydroxide', 'koh', 'potassium hydroxide'],
-        '2-5': ['naoh', 'sodium hydroxide', 'koh', 'potassium hydroxide'],
-        '3-0': [
-          'nh3',
-          'ammonia',
-          'nh4oh',
-          'ammonium hydroxide',
-          'hydrazine',
-          'n2h4'
-        ],
-        '3-1': [
-          'nh3',
-          'ammonia',
-          'methylamine',
-          'ch3nh2',
-          'ethylamine',
-          'c2h5nh2'
-        ],
-        '3-2': ['nh3', 'ammonia', 'ethylenediamine', 'en', 'pyridine'],
-        '3-3': [
-          'nh3',
-          'ammonia',
-          'nh4oh',
-          'ammonium hydroxide',
-          'mg(oh)2',
-          'magnesium hydroxide',
-          'al(oh)3',
-          'aluminum hydroxide'
-        ],
-        '3-4': ['nh3', 'ammonia', 'hydrazine', 'n2h4'],
-        '3-5': [
-          'nh3',
-          'ammonia',
-          'ethylenediamine',
-          'en',
-          'pyridine',
-          'imidazole'
-        ],
-        '4-0': [
-          'acetate buffer',
-          'ch3cooh/ch3coo-',
-          'phosphate buffer',
-          'h2po4-/hpo42-'
-        ],
-        '4-1': [
-          'acetate buffer',
-          'ch3cooh/ch3coo-',
-          'phosphate buffer',
-          'h2po4-/hpo42-'
-        ],
-        '4-2': ['edta buffer', 'phosphate buffer', 'citrate buffer'],
-        '4-3': ['phosphate buffer', 'carbonate buffer', 'acetate buffer'],
-        '4-4': [
-          'phosphate buffer',
-          'h2po4-/hpo42-',
-          'acetate buffer',
-          'ch3cooh/ch3coo-'
-        ],
-        '4-5': [
-          'acetate buffer',
-          'phosphate buffer',
-          'citrate buffer',
-          'tris buffer'
-        ],
-        '5-0': [
-          'h2o2',
+        // --- Column 0: KMnO4 ---
+        '0-0': ['yes', 'light sensitive', 'mno2 catalyzes'], // Auto-decomp (Top)
+        '0-1': [
+          'redox titration',
+          'iron determination',
+          'oxalate',
           'hydrogen peroxide',
-          'al2o3',
-          'aluminum oxide',
-          'zno',
-          'zinc oxide'
-        ],
-        '5-1': ['zn', 'zinc', 'al', 'aluminum', 'sn', 'tin', 'pb', 'lead'],
-        '5-2': ['amino acids', 'glycine', 'alanine', 'histidine', 'cysteine'],
-        '5-3': [
-          'al(oh)3',
-          'aluminum hydroxide',
-          'zn(oh)2',
-          'zinc hydroxide',
-          'cr(oh)3',
-          'chromium hydroxide',
-          'pb(oh)2',
-          'lead hydroxide'
-        ],
-        '5-4': ['h2o2', 'hydrogen peroxide', 'mno2', 'manganese dioxide'],
-        '5-5': [
-          'amino acids',
-          'glycine',
-          'histidine',
-          'al3+',
-          'aluminum ion',
-          'zn2+',
-          'zinc ion',
-          'cysteine'
-        ]
-      };
+          'h2o2',
+          'fe'
+        ], // Application
+        '0-2': ['purple', 'violet', 'deep purple'], // Color
+        '0-3': ['self indicator', 'none', 'self', 'permanganate itself'], // Indicator
+        '0-4': [
+          'mn2+',
+          'manganese(ii)',
+          'mno2',
+          'manganese dioxide',
+          'mno4 2-',
+          'manganate'
+        ], // Reduction Product
+        '0-5': ['no', 'secondary standard'], // 1ry Standard (Bottom)
 
+        // --- Column 1: K2Cr2O7 ---
+        '1-0': ['no', 'stable'], // Auto-decomp (Top)
+        '1-1': [
+          'cod',
+          'chemical oxygen demand',
+          'iron determination',
+          'alcohol determination',
+          'fe'
+        ], // Application
+        '1-2': ['orange', 'orange-red'], // Color
+        '1-3': [
+          'diphenylamine',
+          'bds',
+          'diphenylbenzidine',
+          'redox indicator',
+          'internal'
+        ], // Indicator
+        '1-4': ['cr3+', 'chromium(iii)', 'green ion'], // Reduction Product
+        '1-5': ['yes', 'primary standard'], // 1ry Standard (Bottom)
+
+        // --- Column 2: Ce(SO4)2 ---
+        '2-0': ['no', 'stable', 'very stable'], // Auto-decomp (Top)
+        '2-1': ['redox titration', 'drug analysis', 'paracetamol'], // Application
+        '2-2': ['yellow', 'orange-yellow'], // Color
+        '2-3': ['ferroin', 'n-phenylanthranilic acid'], // Indicator
+        '2-4': ['ce3+', 'cerium(iii)', 'colorless'], // Reduction Product
+        '2-5': ['no', 'secondary standard', 'usually standardized'], // 1ry Standard (Bottom)
+
+        // --- Column 3: I2 ---
+        '3-0': ['yes', 'volatile', 'sublimes', 'disproportionates in base'], // Auto-decomp (Top)
+        '3-1': ['iodimetry', 'vitamin c', 'ascorbic acid', 'sulfides'], // Application
+        '3-2': ['brown', 'red-brown', 'violet vapor'], // Color
+        '3-3': ['starch', 'starch mucilage'], // Indicator
+        '3-4': ['i-', 'iodide'], // Reduction Product
+        '3-5': ['no', 'secondary standard', 'volatile'], // 1ry Standard (Bottom)
+
+        // --- Column 4: KIO3 ---
+        '4-0': ['no', 'stable'], // Auto-decomp (Top)
+        '4-1': [
+          'andrews titration',
+          'iodine source',
+          'standardizing thiosulfate'
+        ], // Application
+        '4-2': ['colorless', 'white solid'], // Color
+        '4-3': ['starch', 'chloroform', 'ccl4', 'extraction'], // Indicator
+        '4-4': ['i2', 'i-', 'i+'], // Reduction Product
+        '4-5': ['yes', 'primary standard'], // 1ry Standard (Bottom)
+
+        // --- Column 5: KBrO3 ---
+        '5-0': ['no', 'stable'], // Auto-decomp (Top)
+        '5-1': ['mg+2', 'al+3', 'phenol'], // Application
+        '5-2': ['colorless', 'white solid'], // Color
+        '5-3': [
+          'methyl orange',
+          'methyl red',
+          'naphthol blue black',
+          'irreversible'
+        ], // Indicator
+        '5-4': ['br-', 'bromide'], // Reduction Product
+        '5-5': ['yes', 'primary standard'] // 1ry Standard (Bottom)
+      };
       let xCategories = [];
       let yCategories = [];
       let validAnswers = {};
@@ -1579,9 +1487,18 @@
 
         const xCat = xCategories[column];
         const yCat = yCategories[targetRow];
-        document.getElementById(
-          'questionText'
-        ).textContent = `Enter a chemical compound or element that satisfies both:\n"${xCat}" AND "${yCat}"`;
+
+        // This formats the text to look like a clean Question Card
+        const questionText = document.getElementById('questionText');
+
+        // We add a question mark (?) automatically if the text doesn't have one
+        const questionEnding = yCat.trim().endsWith('?') ? '' : '?';
+
+        // This sets the text to:
+        // "Topic: KMnO4"
+        // "What is the color of?"
+        questionText.innerText = `Topic: ${xCat}\n\n${yCat}${questionEnding}`;
+
         document.getElementById('answerInput').value = '';
         document.getElementById('answerModal').style.display = 'flex';
         document.getElementById('answerInput').focus();
