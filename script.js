@@ -1,5 +1,3 @@
-let gameAudioContext = null;
-
 const availableColors = [
   '#e74c3c',
   '#3498db',
@@ -78,15 +76,23 @@ const defaultAnswers = {
 
   // --- Column 2: Ce(SO4)2 ---
   '2-0': ['no', 'stable', 'very stable'], // Auto-decomp (Top)
-  '2-1': ['redox titration', 'drug analysis', 'paracetamol'], // Application
+  '2-1': ['redox titration', 'drug analysis', 'paracetamol', 'oxalate', 'fe'], // Application
   '2-2': ['yellow', 'orange-yellow'], // Color
-  '2-3': ['ferroin', 'n-phenylanthranilic acid', 'n-phenylamine'], // Indicator
+  '2-3': ['ferroin', 'n-phenylanthranilic acid', 'diphenylamine'], // Indicator
   '2-4': ['ce3+', 'cerium(iii)', 'colorless'], // Reduction Product
   '2-5': ['no', 'secondary standard', 'usually standardized'], // 1ry Standard (Bottom)
 
   // --- Column 3: I2 ---
   '3-0': ['yes', 'volatile', 'sublimes', 'disproportionates in base'], // Auto-decomp (Top)
-  '3-1': ['iodimetry', 'vitamin c', 'ascorbic acid', 'sulfides'], // Application
+  '3-1': [
+    'iodimetry',
+    'vitamin c',
+    'ascorbic acid',
+    'sulfides',
+    'iodometry',
+    'so3--',
+    's2o3--'
+  ], // Application
   '3-2': ['brown', 'red-brown', 'violet vapor'], // Color
   '3-3': ['starch', 'starch mucilage'], // Indicator
   '3-4': ['i-', 'iodide'], // Reduction Product
@@ -95,10 +101,10 @@ const defaultAnswers = {
   // --- Column 4: KIO3 ---
   '4-0': ['no', 'stable'], // Auto-decomp (Top)
   '4-1': [
-    'andrews titration',
+    'andrew',
+    "andrew's titration",
     'iodine source',
-    'standardizing thiosulfate',
-    'andrew'
+    'standardizing thiosulfate'
   ], // Application
   '4-2': ['colorless', 'white solid'], // Color
   '4-3': ['starch', 'chloroform', 'chcl3', 'extraction'], // Indicator
@@ -123,6 +129,7 @@ let board = Array(6)
   .fill(null)
   .map(() => Array(6).fill(null));
 let selectedColumn = null;
+let gameAudioContext = null;
 
 function loadData() {
   const savedX = localStorage.getItem('chemConnect4XLabels');
