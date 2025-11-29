@@ -80,8 +80,9 @@ body {
 }
 
 /* --- LOGIC TO SHOW WARNING ON SMALL SCREENS --- */
-/* If screen is smaller than 1024px, hide game and show warning */
-@media (max-width: 1024px) {
+/* We set this to 768px. Since "Desktop Mode" usually simulates 980px,
+   the game will now appear when Desktop Mode is active! */
+@media (max-width: 768px) {
   .mobile-warning {
     display: flex;
   }
