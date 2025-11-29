@@ -8,6 +8,22 @@
   </head>
 
   <body>
+    <div class="mobile-warning">
+      <h1>🖥️ Desktop Mode Required</h1>
+      <p>
+        This chemistry game requires a large screen to view the titration grid
+        properly.
+      </p>
+      <div class="instructions">
+        <p><strong>On Mobile?</strong></p>
+        <p>
+          Tap your browser settings (⋮ or AA) and select <br /><strong
+            >"Request Desktop Website"</strong
+          >
+        </p>
+      </div>
+    </div>
+
     <div class="container">
       <h1>🧪 Chemical Connect 4</h1>
       <p class="subtitle">Connect 4 Chemistry Compounds!</p>
@@ -84,12 +100,15 @@
         <div class="modal-content">
           <h2>Answer the Question</h2>
           <p id="questionText"></p>
+
           <input
             type="text"
             class="answer-input"
             id="answerInput"
             placeholder="Type your answer here..."
+            autocomplete="off"
           />
+
           <div class="modal-buttons">
             <button class="submit-btn" onclick="submitAnswer()">
               Submit ✓
@@ -111,6 +130,8 @@
         </div>
       </div>
     </div>
+
+    <div id="toast-container"></div>
 
     <script src="./script.js"></script>
   </body>

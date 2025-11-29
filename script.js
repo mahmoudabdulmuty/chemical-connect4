@@ -131,6 +131,126 @@ let board = Array(6)
 let selectedColumn = null;
 let gameAudioContext = null;
 
+/* --- FEATURE 1: LEVENSHTEIN DISTANCE (Fuzzy Matching) --- */
+function getLevenshteinDistance(a, b) {
+  const matrix = [];
+
+  // 1. Setup matrix
+  for (let i = 0; i <= b.length; i++) {
+    matrix[i] = [i];
+  }
+  for (let j = 0; j <= a.length; j++) {
+    matrix[0][j] = j;
+  }
+
+  // 2. Fill matrix
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1, // substitution
+          matrix[i][j - 1] + 1, // insertion
+          matrix[i - 1][j] + 1 // deletion
+        );
+      }
+    }
+  }
+  return matrix[b.length][a.length];
+}
+
+/* --- FEATURE 2: ADVANCED SOUND ENGINE --- */
+function playSound(type) {
+  if (!gameAudioContext) {
+    gameAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (gameAudioContext.state === 'suspended') {
+    gameAudioContext.resume();
+  }
+
+  const now = gameAudioContext.currentTime;
+  const osc = gameAudioContext.createOscillator();
+  const gain = gameAudioContext.createGain();
+
+  osc.connect(gain);
+  gain.connect(gameAudioContext.destination);
+
+  switch (type) {
+    case 'drop':
+      // Low thud
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(300, now);
+      osc.frequency.exponentialRampToValueAtTime(50, now + 0.3);
+      gain.gain.setValueAtTime(0.5, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+      osc.start(now);
+      osc.stop(now + 0.3);
+      break;
+
+    case 'correct':
+      // Happy "Ding" (High Sine + Triangle)
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(523.25, now); // C5
+      osc.frequency.linearRampToValueAtTime(1046.5, now + 0.1); // C6
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.linearRampToValueAtTime(0, now + 0.5);
+      osc.start(now);
+      osc.stop(now + 0.5);
+      break;
+
+    case 'wrong':
+      // Dissonant "Buzz"
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(150, now);
+      osc.frequency.linearRampToValueAtTime(100, now + 0.3);
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.linearRampToValueAtTime(0, now + 0.3);
+      osc.start(now);
+      osc.stop(now + 0.3);
+      break;
+
+    case 'win':
+      // Victory Arpeggio
+      const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5]; // C E G C E
+      notes.forEach((freq, i) => {
+        const o = gameAudioContext.createOscillator();
+        const g = gameAudioContext.createGain();
+        o.type = 'square';
+        o.frequency.value = freq;
+        o.connect(g);
+        g.connect(gameAudioContext.destination);
+        g.gain.setValueAtTime(0.1, now + i * 0.1);
+        g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.2);
+        o.start(now + i * 0.1);
+        o.stop(now + i * 0.1 + 0.2);
+      });
+      break;
+  }
+}
+
+/* --- FEATURE 3: TOAST NOTIFICATIONS --- */
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+
+  // Set icon based on type
+  let icon = '';
+  if (type === 'success') icon = '✓';
+  if (type === 'error') icon = '✕';
+  if (type === 'info') icon = 'ℹ';
+
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+
+  container.appendChild(toast);
+
+  // Remove element from DOM after animation finishes (3 seconds total)
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
+}
+
 function loadData() {
   const savedX = localStorage.getItem('chemConnect4XLabels');
   const savedY = localStorage.getItem('chemConnect4YLabels');
@@ -164,22 +284,22 @@ function initPlayerSetup() {
     const card = document.createElement('div');
     card.className = 'player-card';
     card.innerHTML = `
-                    <h3>Player ${i + 1}</h3>
-                    <input type="text" class="player-name-input" id="playerName${i}" placeholder="Enter name..." value="Player ${
+        <h3>Player ${i + 1}</h3>
+        <input type="text" class="player-name-input" id="playerName${i}" placeholder="Enter name..." value="Player ${
       i + 1
     }">
-                    <div class="color-options" id="colorOptions${i}">
-                        ${availableColors
-                          .map(
-                            (color) => `
-                            <div class="color-btn" style="background: ${color}"
-                                 data-color="${color}"
-                                 onclick="selectColor(${i}, '${color}')"></div>
-                        `
-                          )
-                          .join('')}
-                    </div>
-                `;
+        <div class="color-options" id="colorOptions${i}">
+            ${availableColors
+              .map(
+                (color) => `
+                <div class="color-btn" style="background: ${color}"
+                     data-color="${color}"
+                     onclick="selectColor(${i}, '${color}')"></div>
+            `
+              )
+              .join('')}
+        </div>
+    `;
     container.appendChild(card);
   }
 
@@ -193,7 +313,7 @@ function selectColor(playerIndex, color) {
     (p) => p.id !== playerIndex && p.color === color
   );
   if (colorTaken) {
-    alert('This color is already taken! Please choose another.');
+    showToast('This color is already taken! Please choose another.', 'info');
     return;
   }
 
@@ -245,28 +365,28 @@ function renderQuestionEditor() {
       const item = document.createElement('div');
       item.className = 'question-item';
       item.innerHTML = `
-                        <h4>Cell (${x}, ${y})</h4>
-                        <div class="label-row">
-                          <div class="label-field">
-                            <label>X-Label (Column ${x}):</label>
-                            <input type="text" id="xlabel-${x}-${y}" value="${
+            <h4>Cell (${x}, ${y})</h4>
+            <div class="label-row">
+              <div class="label-field">
+                <label>X-Label (Column ${x}):</label>
+                <input type="text" id="xlabel-${x}-${y}" value="${
         xCategories[x]
       }">
-                          </div>
-                          <div class="label-field">
-                            <label>Y-Label (Row ${y}):</label>
-                            <input type="text" id="ylabel-${x}-${y}" value="${
+              </div>
+              <div class="label-field">
+                <label>Y-Label (Row ${y}):</label>
+                <input type="text" id="ylabel-${x}-${y}" value="${
         yCategories[y]
       }">
-                          </div>
-                        </div>
-                        <div class="answers-field">
-                          <label>Valid Answers:</label>
-                          <textarea id="answers-${key}" placeholder="Enter answers separated by commas...">${answers.join(
+              </div>
+            </div>
+            <div class="answers-field">
+              <label>Valid Answers:</label>
+              <textarea id="answers-${key}" placeholder="Enter answers separated by commas...">${answers.join(
         ', '
       )}</textarea>
-                        </div>
-                    `;
+            </div>
+        `;
       grid.appendChild(item);
     }
   }
@@ -335,7 +455,7 @@ function saveQuestions() {
   }
 
   saveData();
-  alert('All changes saved successfully! ✓');
+  showToast('All changes saved successfully!', 'success');
   toggleQuestionEditor();
 }
 
@@ -346,7 +466,7 @@ function resetToDefault() {
     validAnswers = JSON.parse(JSON.stringify(defaultAnswers));
     saveData();
     renderQuestionEditor();
-    alert('Reset to default values! ✓');
+    showToast('Reset to default values!', 'info');
   }
 }
 
@@ -371,7 +491,7 @@ function startGame() {
   }
 
   if (players.length !== playerCount) {
-    alert('Please select colors for all players');
+    showToast('Please select colors for all players', 'error');
     return;
   }
 
@@ -437,7 +557,7 @@ function dropPiece(column) {
   }
 
   if (targetRow === -1) {
-    alert('This column is full! Choose another column.');
+    showToast('This column is full! Choose another column.', 'error');
     return;
   }
 
@@ -457,9 +577,12 @@ function dropPiece(column) {
   // "What is the color of?"
   questionText.innerText = `Topic: ${xCat}\n\n${yCat}${questionEnding}`;
 
-  document.getElementById('answerInput').value = '';
+  const input = document.getElementById('answerInput');
+  input.value = '';
+  // Removed Rich Text clearing since element is gone
+
   document.getElementById('answerModal').style.display = 'flex';
-  document.getElementById('answerInput').focus();
+  input.focus();
 }
 
 function submitAnswer() {
@@ -469,13 +592,11 @@ function submitAnswer() {
 
   if (!selectedColumn) return;
 
-  const answer = document
-    .getElementById('answerInput')
-    .value.trim()
-    .toLowerCase();
+  const answerInput = document.getElementById('answerInput');
+  const userAnswer = answerInput.value.trim().toLowerCase();
 
-  if (answer === '') {
-    alert('Please enter an answer!');
+  if (userAnswer === '') {
+    showToast('Please enter an answer!', 'info');
     return;
   }
 
@@ -485,13 +606,29 @@ function submitAnswer() {
 
   let isCorrect = false;
 
+  // Logic for Empty Cells (Free Space)
   if (validAnswersForCell.length === 0) {
     isCorrect = true;
   } else {
     for (let validAnswer of validAnswersForCell) {
       const validLower = validAnswer.toLowerCase().trim();
 
-      if (answer === validLower) {
+      // 1. Direct Match
+      if (userAnswer === validLower) {
+        isCorrect = true;
+        break;
+      }
+
+      // 2. Fuzzy Match
+      // Allow 1 error for words > 3 chars, 2 errors for words > 6 chars
+      const distance = getLevenshteinDistance(userAnswer, validLower);
+      const allowedErrors =
+        validLower.length > 6 ? 2 : validLower.length > 3 ? 1 : 0;
+
+      if (distance <= allowedErrors && distance > 0) {
+        console.log(
+          `Fuzzy match accepted: ${userAnswer} vs ${validLower} (Dist: ${distance})`
+        );
         isCorrect = true;
         break;
       }
@@ -501,6 +638,9 @@ function submitAnswer() {
   closeModal();
 
   if (isCorrect) {
+    playSound('correct');
+    showToast('Correct Answer!', 'success');
+
     const player = players[currentPlayerIndex];
     board[targetCell.y][targetCell.x] = currentPlayerIndex;
 
@@ -512,13 +652,15 @@ function submitAnswer() {
     cellElement.classList.add('falling');
     cellElement.style.background = player.color;
     cellElement.classList.add('filled');
-    // Show the User's answer inside the bubble
-    cellElement.textContent = answer.toUpperCase().substring(0, 6);
+
+    // Format Display Text (Capitalize)
+    cellElement.textContent = userAnswer.substring(0, 6).toUpperCase();
     cellElement.style.color = 'white';
     cellElement.style.fontWeight = 'bold';
 
     setTimeout(() => {
       cellElement.classList.remove('falling');
+      playSound('drop'); // Feature 3: Thud sound when it lands
 
       if (checkWinner(targetCell.x, targetCell.y)) {
         setTimeout(() => showWinner(), 300);
@@ -529,7 +671,9 @@ function submitAnswer() {
       updateCurrentPlayer();
     }, 800);
   } else {
-    alert('Wrong answer! Moving to next player.');
+    playSound('wrong');
+    // NO SPOILER: Just says wrong.
+    showToast("Wrong! Next player's turn.", 'error');
     currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
     updateCurrentPlayer();
   }
@@ -596,7 +740,7 @@ function showWinner() {
   document.getElementById('winnerName').textContent = player.name;
   document.getElementById('winnerModal').style.display = 'flex';
 
-  playWinSound();
+  playSound('win');
 }
 
 function resetGame() {
@@ -607,44 +751,12 @@ function resetGame() {
   initPlayerSetup();
 }
 
-function playWinSound() {
-  // If audio setup failed or isn't supported, stop
-  if (!gameAudioContext) return;
-
-  // Create the sequence
-  const now = gameAudioContext.currentTime;
-
-  // Notes: C5, E5, G5, C6 (Victory Arpeggio)
-  const notes = [523.25, 659.25, 783.99, 1046.5];
-
-  notes.forEach((freq, i) => {
-    const osc = gameAudioContext.createOscillator();
-    const gain = gameAudioContext.createGain();
-
-    osc.type = 'triangle'; // Retro game sound
-    osc.frequency.value = freq;
-
-    // Connect oscillator -> gain -> speakers
-    osc.connect(gain);
-    gain.connect(gameAudioContext.destination);
-
-    // Timing: Play one note after another (0.1s apart)
-    const startTime = now + i * 0.1;
-    const duration = 0.1;
-
-    // Volume: Start loud, fade to silence
-    gain.gain.setValueAtTime(0.2, startTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-
-    osc.start(startTime);
-    osc.stop(startTime + duration);
-  });
-}
-
 document.addEventListener('DOMContentLoaded', () => {
   initPlayerSetup();
 
-  document.getElementById('answerInput').addEventListener('keypress', (e) => {
+  // Answer Input Keypress
+  const answerInput = document.getElementById('answerInput');
+  answerInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') submitAnswer();
   });
 
