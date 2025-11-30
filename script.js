@@ -145,7 +145,23 @@ function getLevenshteinDistance(a, b) {
   return matrix[b.length][a.length];
 }
 
-/* --- FEATURE 2: ADVANCED SOUND ENGINE --- */
+/* --- FEATURE 2: CHEMICAL SOUND ENGINE (Revised) --- */
+
+// Helper to generate white noise buffer for "Fizz"
+let noiseBuffer = null;
+function getNoiseBuffer(ctx) {
+  if (!noiseBuffer) {
+    const bufferSize = ctx.sampleRate * 2; // 2 seconds
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+    noiseBuffer = buffer;
+  }
+  return noiseBuffer;
+}
+
 function playSound(type) {
   if (!gameAudioContext) {
     gameAudioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -155,71 +171,121 @@ function playSound(type) {
   }
 
   const now = gameAudioContext.currentTime;
-  const osc = gameAudioContext.createOscillator();
-  const gain = gameAudioContext.createGain();
 
-  osc.connect(gain);
+  // Master Gain for this sound instance
+  const gain = gameAudioContext.createGain();
   gain.connect(gameAudioContext.destination);
 
   switch (type) {
     case 'drop':
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(600, now);
-      osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
-      gain.gain.setValueAtTime(0.3, now);
-      gain.gain.linearRampToValueAtTime(0, now + 0.1);
-      osc.start(now);
-      osc.stop(now + 0.1);
+      // "Bloop" Sound (Liquid Drop)
+      // Sine wave pitch bends up quickly at the end
+      const oscDrop = gameAudioContext.createOscillator();
+      oscDrop.type = 'sine';
+      oscDrop.frequency.setValueAtTime(500, now);
+      oscDrop.frequency.exponentialRampToValueAtTime(300, now + 0.1);
+      oscDrop.frequency.linearRampToValueAtTime(600, now + 0.2); // The "up" creates the bloop
+
+      oscDrop.connect(gain);
+
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(0.5, now + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+
+      oscDrop.start(now);
+      oscDrop.stop(now + 0.3);
       break;
 
     case 'correct':
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(523.25, now);
-      osc.frequency.linearRampToValueAtTime(1046.5, now + 0.1);
-      gain.gain.setValueAtTime(0.1, now);
-      gain.gain.linearRampToValueAtTime(0, now + 0.5);
-      osc.start(now);
-      osc.stop(now + 0.5);
+      // "Glass Clink" (Beaker Ting)
+      // High sine with a non-integer harmonic for glassy texture
+      const osc1 = gameAudioContext.createOscillator();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(1200, now);
+      osc1.connect(gain);
+
+      const osc2 = gameAudioContext.createOscillator();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(1200 * 2.5, now); // Glass harmonic
+      osc2.connect(gain);
+
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(0.2, now + 0.02); // Sharp attack
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 1.5); // Long ring
+
+      osc1.start(now);
+      osc1.stop(now + 1.5);
+      osc2.start(now);
+      osc2.stop(now + 1.5);
       break;
 
     case 'wrong':
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(150, now);
-      osc.frequency.linearRampToValueAtTime(100, now + 0.3);
-      gain.gain.setValueAtTime(0.1, now);
-      gain.gain.linearRampToValueAtTime(0, now + 0.3);
-      osc.start(now);
-      osc.stop(now + 0.3);
+      // "Sludge Gurgle" (Failed Reaction)
+      // Low sawtooth with wobbling LFO
+      const oscWrong = gameAudioContext.createOscillator();
+      oscWrong.type = 'sawtooth';
+      oscWrong.frequency.setValueAtTime(150, now);
+      oscWrong.frequency.linearRampToValueAtTime(50, now + 0.5); // Pitch drop
+
+      // LFO for the gurgle effect
+      const lfo = gameAudioContext.createOscillator();
+      lfo.type = 'sine';
+      lfo.frequency.value = 15; // Fast wobble
+      const lfoGain = gameAudioContext.createGain();
+      lfoGain.gain.value = 50; // Modulation depth
+      lfo.connect(lfoGain);
+      lfoGain.connect(oscWrong.frequency);
+      lfo.start(now);
+      lfo.stop(now + 0.5);
+
+      oscWrong.connect(gain);
+
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+
+      oscWrong.start(now);
+      oscWrong.stop(now + 0.5);
       break;
 
     case 'fizz':
-      osc.type = 'square';
-      osc.frequency.setValueAtTime(100, now);
-      for (let i = 0; i < 10; i++) {
-        osc.frequency.linearRampToValueAtTime(
-          200 + Math.random() * 500,
-          now + i * 0.05
-        );
-      }
-      gain.gain.setValueAtTime(0.1, now);
-      gain.gain.linearRampToValueAtTime(0, now + 0.5);
-      osc.start(now);
-      osc.stop(now + 0.5);
+      // "Chemical Hiss" (White Noise)
+      const noiseSrc = gameAudioContext.createBufferSource();
+      noiseSrc.buffer = getNoiseBuffer(gameAudioContext);
+
+      const noiseFilter = gameAudioContext.createBiquadFilter();
+      noiseFilter.type = 'bandpass';
+      noiseFilter.frequency.setValueAtTime(800, now);
+      noiseFilter.frequency.linearRampToValueAtTime(3000, now + 1); // Sweep up like gas escaping
+
+      noiseSrc.connect(noiseFilter);
+      noiseFilter.connect(gain);
+
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 1);
+
+      noiseSrc.start(now);
+      noiseSrc.stop(now + 1);
       break;
 
     case 'win':
-      const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5];
+      // Victory Bubbles (Rapid rising sines)
+      const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5, 1567.98];
       notes.forEach((freq, i) => {
         const o = gameAudioContext.createOscillator();
         const g = gameAudioContext.createGain();
-        o.type = 'square';
+        o.type = 'sine'; // Sine for bubbles
         o.frequency.value = freq;
         o.connect(g);
         g.connect(gameAudioContext.destination);
-        g.gain.setValueAtTime(0.1, now + i * 0.1);
-        g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.2);
-        o.start(now + i * 0.1);
-        o.stop(now + i * 0.1 + 0.2);
+
+        // Staggered start time
+        const start = now + i * 0.1;
+        g.gain.setValueAtTime(0, start);
+        g.gain.linearRampToValueAtTime(0.1, start + 0.05);
+        g.gain.exponentialRampToValueAtTime(0.001, start + 0.3);
+
+        o.start(start);
+        o.stop(start + 0.3);
       });
       break;
   }
@@ -285,7 +351,7 @@ function initPlayerSetup() {
     const existingName = players[i] ? players[i].name : `Player ${i + 1}`;
 
     card.innerHTML = `
-        <h3>${i === 0 ? 'First Move' : 'Second Move'}</h3>
+        <h3>${i === 0 ? 'Team 1' : 'Team 2'}</h3>
         <input type="text"
                class="player-name-input"
                id="playerNameInput${i}"
@@ -315,9 +381,6 @@ function swapRoles() {
 
   initPlayerSetup();
 
-  // Restore names to the inputs (Swapping names visual position too? No, usually names stay, colors swap)
-  // Let's keep names in their input boxes (Input 0 and Input 1)
-  // But the Role associated with Input 0 has changed.
   document.getElementById('playerNameInput0').value = p1Name;
   document.getElementById('playerNameInput1').value = p2Name;
 }
