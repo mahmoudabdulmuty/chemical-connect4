@@ -1,3 +1,101 @@
+.ph-meter-container {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 15px;
+  border: 1px solid #475569;
+  margin-bottom: 20px;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.ph-readout {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #e2e8f0;
+}
+
+.ph-number {
+  font-family: 'Courier New', monospace;
+  background: #0f172a;
+  padding: 2px 8px;
+  border-radius: 5px;
+  border: 1px solid #475569;
+  color: #22c55e; /* Default green */
+  margin: 0 5px;
+}
+
+.ph-status {
+  font-size: 0.9em;
+  opacity: 0.8;
+}
+
+.ph-bar-wrapper {
+  position: relative;
+  height: 30px;
+  margin: 0 10px;
+}
+
+.ph-bar {
+  width: 100%;
+  height: 100%;
+  border-radius: 15px;
+  /* THE MAGIC GRADIENT: Acid (Red) -> Neutral (Green) -> Base (Blue) */
+  background: linear-gradient(
+    90deg,
+    #ef4444 0%,
+    #f97316 25%,
+    #22c55e 50%,
+    #3b82f6 75%,
+    #6366f1 100%
+  );
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.4);
+  border: 2px solid #334155;
+}
+
+.ph-needle {
+  position: absolute;
+  top: -5px;
+  left: 50%; /* Start at Neutral */
+  width: 4px;
+  height: 40px;
+  background: white;
+  border: 1px solid #000;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  transform: translateX(-50%);
+  transition: left 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy spring effect */
+  z-index: 5;
+}
+
+.ph-needle::after {
+  content: '▼';
+  position: absolute;
+  top: -15px;
+  left: -6px;
+  color: white;
+  font-size: 12px;
+}
+
+.ph-scale-label {
+  position: absolute;
+  top: 35px;
+  font-size: 0.8em;
+  color: #94a3b8;
+  font-weight: bold;
+}
+
+.ph-scale-label.left {
+  left: 0;
+}
+.ph-scale-label.center {
+  left: 50%;
+  transform: translateX(-50%);
+}
+.ph-scale-label.right {
+  right: 0;
+}
+
+/* ... existing styles below ... */
 * {
   margin: 0;
   padding: 0;
@@ -11,7 +109,6 @@ html {
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  /* Dark Lab Background */
   background: #0f172a;
   color: #e2e8f0;
   min-height: 100vh;
@@ -31,7 +128,7 @@ body {
   padding: 30px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
   max-width: 1400px;
-  min-width: 1000px; /* Force Desktop width */
+  min-width: 1000px;
   width: 100%;
   border: 1px solid #334155;
 }
@@ -51,7 +148,6 @@ h1 {
   font-size: 1.1em;
 }
 
-/* --- SETUP SCREEN --- */
 .setup-screen {
   text-align: center;
   display: flex;
@@ -59,7 +155,6 @@ h1 {
   align-items: center;
 }
 
-/* New Mode Badge Style */
 .mode-badge {
   background: #334155;
   color: #a5b4fc;
@@ -90,7 +185,7 @@ h1 {
 }
 
 .player-card {
-  background: #1e293b; /* Darker card */
+  background: #1e293b;
   padding: 25px;
   border-radius: 20px;
   border: 2px solid #475569;
@@ -113,7 +208,6 @@ h1 {
   font-size: 1.2em;
 }
 
-/* Styled Input Fields */
 input[type='text'] {
   background: #0f172a;
   border: 2px solid #475569;
@@ -132,7 +226,6 @@ input[type='text']:focus {
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
 }
 
-/* Display the fixed color for the player card */
 .fixed-color-display {
   width: 60px;
   height: 60px;
@@ -150,7 +243,6 @@ input[type='text']:focus {
   opacity: 0.8;
 }
 
-/* Swap Button */
 .swap-btn {
   background: transparent;
   border: 2px solid #64748b;
@@ -170,7 +262,6 @@ input[type='text']:focus {
   transform: scale(1.05);
 }
 
-/* Action Buttons (General) */
 .action-buttons {
   display: flex;
   gap: 15px;
@@ -201,7 +292,6 @@ button {
   box-shadow: 0 6px 20px rgba(79, 70, 229, 0.6);
 }
 
-/* --- GAME SCREEN --- */
 .game-screen {
   display: none;
 }
@@ -256,7 +346,6 @@ button {
   align-items: center;
 }
 
-/* --- LABELS --- */
 .y-labels {
   display: flex;
   flex-direction: column;
@@ -302,13 +391,11 @@ button {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-/* --- THE NEW BURETTE/TEST TUBE BOARD --- */
 .board.glass-rack {
   display: grid;
   grid-template-columns: repeat(6, 90px);
   grid-template-rows: repeat(6, 90px);
   gap: 10px;
-  /* Dark background but with a subtle rack feel */
   background: #0f172a;
   padding: 15px;
   border-radius: 15px;
@@ -317,10 +404,8 @@ button {
   box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
 }
 
-/* Each cell represents a section of the glass tube */
 .cell {
   position: relative;
-  /* Glass Effect Background */
   background: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0.05) 0%,
@@ -336,10 +421,9 @@ button {
   font-weight: bold;
   font-size: 0.8em;
   color: #333;
-  overflow: hidden; /* Keep liquid inside */
+  overflow: hidden;
 }
 
-/* Measurement Ticks on the side of every cell */
 .cell::before {
   content: '';
   position: absolute;
@@ -349,10 +433,9 @@ button {
   height: 2px;
   background: rgba(255, 255, 255, 0.3);
   box-shadow: 0 15px 0 rgba(255, 255, 255, 0.3),
-    0 30px 0 rgba(255, 255, 255, 0.3), 0 45px 0 rgba(255, 255, 255, 0.5); /* Major tick */
+    0 30px 0 rgba(255, 255, 255, 0.3), 0 45px 0 rgba(255, 255, 255, 0.5);
 }
 
-/* FILLED STATE - The Liquid */
 .cell.filled {
   cursor: not-allowed;
   border: none;
@@ -363,7 +446,6 @@ button {
   z-index: 10;
 }
 
-/* Highlight shimmer on the "liquid" */
 .cell.filled::after {
   content: '';
   position: absolute;
@@ -412,7 +494,6 @@ button {
   margin-bottom: 5px;
 }
 
-/* --- MODAL --- */
 .modal {
   display: none;
   position: fixed;
@@ -487,7 +568,6 @@ button {
   background: #475569;
 }
 
-/* --- WINNER MODAL --- */
 .winner-modal {
   display: none;
   position: fixed;
@@ -541,7 +621,6 @@ button {
   transform: scale(1.05);
 }
 
-/* --- TOASTS --- */
 #toast-container {
   position: fixed;
   top: 20px;
@@ -592,7 +671,6 @@ button {
   }
 }
 
-/* --- PARTICLES (Smoke & Bubbles) --- */
 #particles-container {
   position: fixed;
   top: 0;
@@ -645,4 +723,119 @@ button {
     transform: translateY(-80px) scale(3);
     opacity: 0;
   }
+}
+
+/* --- NEW: pH METER STYLES (Refined) --- */
+.ph-meter-container {
+  background: #1e293b;
+  padding: 15px 25px 35px 25px; /* Increased bottom padding for labels */
+  border-radius: 15px;
+  border: 1px solid #475569;
+  margin-bottom: 25px;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.ph-readout {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 15px;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #e2e8f0;
+}
+
+.ph-number {
+  font-family: 'Courier New', monospace;
+  background: #0f172a;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid #64748b;
+  color: #22c55e; /* Default green */
+  font-size: 1.3em;
+  min-width: 80px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.ph-status {
+  font-size: 0.9em;
+  opacity: 0.9;
+  min-width: 80px;
+  text-align: left;
+}
+
+.ph-bar-wrapper {
+  position: relative;
+  height: 24px; /* Slightly sleeker */
+  margin: 0 10px;
+}
+
+.ph-bar {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  /* THE MAGIC GRADIENT: Acid (Red) -> Neutral (Green) -> Base (Blue) */
+  background: linear-gradient(
+    90deg,
+    #ef4444 0%,
+    #f97316 25%,
+    #22c55e 50%,
+    #3b82f6 75%,
+    #6366f1 100%
+  );
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.4);
+  border: 2px solid #334155;
+}
+
+.ph-needle {
+  position: absolute;
+  top: -6px;
+  left: 50%; /* Start at Neutral */
+  width: 4px;
+  height: 36px;
+  background: #fff;
+  border: 1px solid #0f172a;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  transform: translateX(-50%);
+  transition: left 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); /* Smoother bounce */
+  z-index: 5;
+  border-radius: 2px;
+}
+
+/* Triangle pointer on top of needle */
+.ph-needle::after {
+  content: '▼';
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #e2e8f0;
+  font-size: 10px;
+}
+
+.ph-scale-label {
+  position: absolute;
+  top: 32px;
+  font-size: 0.75em;
+  color: #94a3b8;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ph-scale-label.left {
+  left: 0;
+  color: #ef4444;
+}
+.ph-scale-label.center {
+  left: 50%;
+  transform: translateX(-50%);
+  color: #22c55e;
+}
+.ph-scale-label.right {
+  right: 0;
+  color: #3b82f6;
 }

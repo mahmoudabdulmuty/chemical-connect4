@@ -13,7 +13,6 @@
       <p class="subtitle">Acid (Red) vs. Base (Blue)</p>
 
       <div class="setup-screen" id="setupScreen">
-        <!-- Fixed Header Style (No longer a dropdown) -->
         <div class="mode-badge">
           <span>⚗️ Mode: 2 Players (Acid vs Base)</span>
         </div>
@@ -21,7 +20,6 @@
         <div class="players-container-wrapper">
           <div class="players-config" id="playersConfig"></div>
 
-          <!-- Swap Button -->
           <button class="swap-btn" onclick="swapRoles()" title="Swap Colors">
             ⇄ Swap Sides
           </button>
@@ -35,6 +33,23 @@
       </div>
 
       <div class="game-screen" id="gameScreen">
+        <!-- NEW: pH METER TUG-OF-WAR -->
+        <div class="ph-meter-container">
+          <div class="ph-readout">
+            <span>Solution pH:</span>
+            <span id="phValue" class="ph-number">7.0</span>
+            <span id="phStatus" class="ph-status">(Neutral)</span>
+          </div>
+          <div class="ph-bar-wrapper">
+            <div class="ph-bar"></div>
+            <div class="ph-needle" id="phNeedle"></div>
+            <!-- Labels -->
+            <div class="ph-scale-label left">0 (Acid)</div>
+            <div class="ph-scale-label center">7</div>
+            <div class="ph-scale-label right">14 (Base)</div>
+          </div>
+        </div>
+
         <div class="game-info">
           <div class="current-player">
             <span>Current Turn:</span>
@@ -49,8 +64,6 @@
           <div class="board-column">
             <div class="board-and-indicators">
               <div class="column-indicators" id="columnIndicators"></div>
-
-              <!-- The Board acts as the rack for our test tubes -->
               <div class="board glass-rack" id="gameBoard"></div>
             </div>
             <div class="x-labels-container" id="xLabels"></div>
@@ -58,7 +71,6 @@
         </div>
       </div>
 
-      <!-- Modal Wrapper -->
       <div class="modal" id="answerModal">
         <div class="modal-content">
           <h2>Answer the Question</h2>
@@ -87,6 +99,10 @@
           <p style="font-size: 1.5em; margin: 20px 0">Winner:</p>
           <div class="winner-color" id="winnerColor"></div>
           <p style="font-size: 1.3em" id="winnerName"></p>
+          <p
+            id="finalPH"
+            style="margin-top: 15px; font-weight: bold; color: #cbd5e1"
+          ></p>
           <button class="play-again-btn" onclick="resetGame()">
             Play Again
           </button>
@@ -94,10 +110,7 @@
       </div>
     </div>
 
-    <!-- Container for Toast Notifications -->
     <div id="toast-container"></div>
-
-    <!-- Container for Particle Effects (Bubbles/Smoke) -->
     <div id="particles-container"></div>
 
     <script src="./script.js"></script>
