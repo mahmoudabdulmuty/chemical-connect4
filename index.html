@@ -3,74 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1024" />
-    <title>Chemical Connect 4 | Chemistry Game</title>
+    <title>Chemical Connect 4 | Acid vs Base</title>
     <link rel="stylesheet" href="./style.css" />
   </head>
 
   <body>
-    <div class="mobile-warning">
-      <h1>🖥️ Desktop Mode Required</h1>
-      <p>
-        This chemistry game requires a large screen to view the titration grid
-        properly.
-      </p>
-      <div class="instructions">
-        <p><strong>On Mobile?</strong></p>
-        <p>
-          Tap your browser settings (⋮ or AA) and select <br /><strong
-            >"Request Desktop Website"</strong
-          >
-        </p>
-      </div>
-    </div>
-
     <div class="container">
       <h1>🧪 Chemical Connect 4</h1>
-      <p class="subtitle">Connect 4 Chemistry Compounds!</p>
+      <p class="subtitle">Acid (Red) vs. Base (Blue)</p>
 
       <div class="setup-screen" id="setupScreen">
-        <div class="player-count">
-          <label for="playerCount">Number of Players:</label>
-          <select id="playerCount">
-            <option value="2">2 Players</option>
-            <option value="3">3 Players</option>
-            <option value="4">4 Players</option>
-          </select>
+        <!-- Fixed Header Style (No longer a dropdown) -->
+        <div class="mode-badge">
+          <span>⚗️ Mode: 2 Players (Acid vs Base)</span>
         </div>
 
-        <div class="players-config" id="playersConfig"></div>
+        <div class="players-container-wrapper">
+          <div class="players-config" id="playersConfig"></div>
 
-        <div class="action-buttons">
-          <button class="start-btn" onclick="startGame()">Start Game 🚀</button>
-          <button class="edit-questions-btn" onclick="toggleQuestionEditor()">
-            Edit Grid & Questions 📝
+          <!-- Swap Button -->
+          <button class="swap-btn" onclick="swapRoles()" title="Swap Colors">
+            ⇄ Swap Sides
           </button>
         </div>
 
-        <div class="questions-editor" id="questionsEditor">
-          <h2 style="color: #667eea; margin-bottom: 20px">
-            Edit Grid Cells - Labels & Answers
-          </h2>
-
-          <p style="color: #666; margin-bottom: 20px">
-            For each cell, edit the X-label (column), Y-label (row), and valid
-            answers.<br />
-            Answers should be separated by commas (e.g., H2SO4, sulfuric acid)
-          </p>
-
-          <div class="question-grid" id="questionGrid"></div>
-
-          <div class="editor-buttons">
-            <button class="save-btn" onclick="saveQuestions()">
-              Save All Changes ✓
-            </button>
-            <button class="reset-default-btn" onclick="resetToDefault()">
-              Reset to Default
-            </button>
-            <button class="cancel-edit-btn" onclick="toggleQuestionEditor()">
-              Cancel
-            </button>
-          </div>
+        <div class="action-buttons">
+          <button class="start-btn" onclick="startGame()">
+            Start Reaction 🚀
+          </button>
         </div>
       </div>
 
@@ -81,7 +41,7 @@
             <span class="player-indicator" id="currentPlayerIndicator"></span>
             <span id="currentPlayerName"></span>
           </div>
-          <button class="reset-btn" onclick="resetGame()">New Game</button>
+          <button class="reset-btn" onclick="resetGame()">New Reaction</button>
         </div>
 
         <div class="game-board-container">
@@ -89,13 +49,16 @@
           <div class="board-column">
             <div class="board-and-indicators">
               <div class="column-indicators" id="columnIndicators"></div>
-              <div class="board" id="gameBoard"></div>
+
+              <!-- The Board acts as the rack for our test tubes -->
+              <div class="board glass-rack" id="gameBoard"></div>
             </div>
             <div class="x-labels-container" id="xLabels"></div>
           </div>
         </div>
       </div>
 
+      <!-- Modal Wrapper -->
       <div class="modal" id="answerModal">
         <div class="modal-content">
           <h2>Answer the Question</h2>
@@ -120,7 +83,7 @@
 
       <div class="winner-modal" id="winnerModal">
         <div class="winner-content">
-          <h2>🎉 Congratulations! 🎉</h2>
+          <h2>🎉 Reaction Complete! 🎉</h2>
           <p style="font-size: 1.5em; margin: 20px 0">Winner:</p>
           <div class="winner-color" id="winnerColor"></div>
           <p style="font-size: 1.3em" id="winnerName"></p>
@@ -131,7 +94,11 @@
       </div>
     </div>
 
+    <!-- Container for Toast Notifications -->
     <div id="toast-container"></div>
+
+    <!-- Container for Particle Effects (Bubbles/Smoke) -->
+    <div id="particles-container"></div>
 
     <script src="./script.js"></script>
   </body>
