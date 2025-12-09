@@ -29,11 +29,11 @@
           <button class="start-btn" onclick="startGame()">
             Start Reaction 🚀
           </button>
+          <button class="help-btn" onclick="openHelp()">How to Play ❔</button>
         </div>
       </div>
 
       <div class="game-screen" id="gameScreen">
-        <!-- NEW: pH METER TUG-OF-WAR -->
         <div class="ph-meter-container">
           <div class="ph-readout">
             <span>Solution pH:</span>
@@ -43,7 +43,6 @@
           <div class="ph-bar-wrapper">
             <div class="ph-bar"></div>
             <div class="ph-needle" id="phNeedle"></div>
-            <!-- Labels -->
             <div class="ph-scale-label left">0 (Acid)</div>
             <div class="ph-scale-label center">7</div>
             <div class="ph-scale-label right">14 (Base)</div>
@@ -90,6 +89,50 @@
             </button>
             <button class="cancel-btn" onclick="closeModal()">Cancel</button>
           </div>
+        </div>
+      </div>
+
+      <div class="modal" id="helpModal">
+        <div class="modal-content help-content">
+          <h2>🧪 Lab Protocols</h2>
+
+          <div class="rule-section">
+            <h3>1. The Objective</h3>
+            <p>
+              Connect <strong>4 particles</strong> of your color in a row
+              (horizontal, vertical, or diagonal) to win the reaction.
+            </p>
+          </div>
+
+          <div class="rule-section">
+            <h3>2. Titration Mechanics</h3>
+            <p>
+              You cannot simply drop a piece! You must
+              <strong>answer a Chemistry Question</strong> correctly to
+              successfully add your reagent to the burette.
+            </p>
+            <ul class="help-list">
+              <li><strong>Correct:</strong> The piece drops. ✅</li>
+              <li><strong>Wrong:</strong> You lose your turn! ❌</li>
+            </ul>
+          </div>
+
+          <div class="rule-section">
+            <h3>3. The pH Meter</h3>
+            <p>
+              The meter tracks the <strong>strategic dominance</strong> of the
+              board.
+            </p>
+            <div class="ph-mini-demo">
+              <span style="color: #ef4444">Acidic (&lt;7)</span> means Red is
+              winning.
+              <br />
+              <span style="color: #3b82f6">Basic (&gt;7)</span> means Blue is
+              winning.
+            </div>
+          </div>
+
+          <button class="submit-btn" onclick="closeHelp()">Got it!</button>
         </div>
       </div>
 

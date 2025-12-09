@@ -539,7 +539,10 @@ button {
   gap: 15px;
   justify-content: center;
 }
+
 .submit-btn {
+  align-self: center;
+  width: fit-content;
   background: #10b981;
   color: white;
   padding: 12px 35px;
@@ -550,6 +553,7 @@ button {
   font-weight: bold;
   transition: background 0.3s;
 }
+
 .submit-btn:hover {
   background: #059669;
 }
@@ -838,4 +842,105 @@ button {
 .ph-scale-label.right {
   right: 0;
   color: #3b82f6;
+}
+
+.help-btn {
+  background: transparent;
+  border: 2px solid #94a3b8;
+  color: #e2e8f0;
+  padding: 16px 25px;
+  font-size: 1.1em;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.help-btn:hover {
+  border-color: #22c55e;
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+  transform: scale(1.05);
+}
+
+.help-content {
+  max-width: 600px;
+  width: 90%;
+  text-align: left;
+
+  /* 1. Constrain Height & Enable Scroll */
+  max-height: 85vh; /* Never exceed 85% of viewport height */
+  overflow-y: auto; /* Add scrollbar if content is too long */
+
+  /* 2. Compact Padding */
+  padding: 25px; /* Reduced from 40px to save space */
+
+  /* 3. Flex layout to handle content flow better */
+  display: flex;
+  flex-direction: column;
+}
+
+.help-content h2 {
+  text-align: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #475569;
+  margin-top: 0;
+}
+
+.rule-section {
+  background: rgba(15, 23, 42, 0.6);
+  padding: 12px; /* Slightly reduced padding */
+  border-radius: 10px;
+  margin-bottom: 10px; /* Reduced margin */
+  border-left: 4px solid #6366f1;
+}
+
+.rule-section p {
+  font-size: 0.95em; /* Slightly smaller text for better fit */
+  line-height: 1.4;
+  margin-bottom: 0;
+}
+
+/* --- CUSTOM SCROLLBAR (Keeps the design looking premium) --- */
+/* This hides the ugly default grey scrollbar */
+.help-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.help-content::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.3);
+  border-radius: 4px;
+  margin: 10px 0;
+}
+
+.help-content::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
+.help-content::-webkit-scrollbar-thumb:hover {
+  background: #6366f1; /* Matches your theme accent */
+}
+
+.help-list {
+  list-style: none;
+  margin-top: 8px;
+  padding-left: 10px;
+}
+
+.help-list li {
+  margin-bottom: 5px;
+  font-size: 0.95em;
+  color: #cbd5e1;
+}
+
+.ph-mini-demo {
+  background: #0f172a;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  border: 1px solid #334155;
+  margin-top: 10px;
 }

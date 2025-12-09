@@ -322,111 +322,134 @@ function swapRoles() {
   document.getElementById('playerNameInput1').value = p2Name;
 }
 
-/* --- STRATEGIC pH CALCULATION (Heuristic) --- */
-// Evaluates a window of 4 cells for a specific player
 function evaluateWindow(window, piece) {
   let score = 0;
-  const oppPiece = piece === 0 ? 1 : 0; // Assuming 2 players (0 and 1)
+  // Opponent piece (Assuming 0 is Acid/Red, 1 is Base/Blue)
+  const oppPiece = piece === 0 ? 1 : 0;
 
-  let countPiece = window.filter((cell) => cell === piece).length;
-  let countEmpty = window.filter((cell) => cell === null).length;
-  let countOpp = window.filter((cell) => cell === oppPiece).length;
+  const countPiece = window.filter((cell) => cell === piece).length;
+  const countEmpty = window.filter((cell) => cell === null).length;
+  const countOpp = window.filter((cell) => cell === oppPiece).length;
 
-  if (countOpp > 0) return 0; // Blocked window is worthless
-
-  if (countPiece === 4) {
-    score += 1000;
-  } else if (countPiece === 3 && countEmpty === 1) {
-    score += 15; // Major threat (3-in-a-row)
-  } else if (countPiece === 2 && countEmpty === 2) {
-    score += 5; // Developing threat
+  // RULE 1: If the window is blocked (contains opponent pieces), it's worth 0.
+  // This solves your issue: "More boxes but no approach to win" = 0 score.
+  if (countOpp > 0) {
+    return 0;
   }
 
-  // Center Control Bonus (Optional, but good for strategy)
-  // Logic usually handled in board loop, simplified here to just structure
+  // RULE 2: Assign weights based on threat level
+  if (countPiece === 4) {
+    score += 10000; // WINNING MOVE
+  } else if (countPiece === 3 && countEmpty === 1) {
+    score += 100; // MAJOR THREAT (3 in a row)
+  } else if (countPiece === 2 && countEmpty === 2) {
+    score += 10; // MINOR THREAT (2 in a row)
+  }
+
   return score;
 }
 
-// Scans the entire board for one player to calculate their "Strength Score"
-function getBoardScore(board, playerIndex) {
+function scorePosition(board, piece) {
   let score = 0;
 
-  // Horizontal
+  // A. CENTER COLUMN PREFERENCE
+  // In Connect 4, the center column is most valuable because it connects to the most lines.
+  const centerArray = board.map((row) => row[3]); // Column 3 is center (0-5 index)
+  const centerCount = centerArray.filter((x) => x === piece).length;
+  score += centerCount * 3; // Small bonus for controlling the center
+
+  // B. HORIZONTAL WINDOWS
   for (let r = 0; r < 6; r++) {
     for (let c = 0; c < 4; c++) {
-      let window = [
+      // Stop at 3 because c+3 = 6
+      const window = [
         board[r][c],
         board[r][c + 1],
         board[r][c + 2],
         board[r][c + 3]
       ];
-      score += evaluateWindow(window, playerIndex);
+      score += evaluateWindow(window, piece);
     }
   }
 
-  // Vertical
+  // C. VERTICAL WINDOWS
   for (let c = 0; c < 6; c++) {
     for (let r = 0; r < 3; r++) {
-      let window = [
+      // Stop at 2 because r+3 = 5
+      const window = [
         board[r][c],
         board[r + 1][c],
         board[r + 2][c],
         board[r + 3][c]
       ];
-      score += evaluateWindow(window, playerIndex);
+      score += evaluateWindow(window, piece);
     }
   }
 
-  // Diagonal Positive (/)
+  // D. DIAGONAL (Positive Slope /)
   for (let r = 0; r < 3; r++) {
     for (let c = 0; c < 4; c++) {
-      let window = [
+      const window = [
         board[r][c],
         board[r + 1][c + 1],
         board[r + 2][c + 2],
         board[r + 3][c + 3]
       ];
-      score += evaluateWindow(window, playerIndex);
+      score += evaluateWindow(window, piece);
     }
   }
 
-  // Diagonal Negative (\)
+  // E. DIAGONAL (Negative Slope \)
   for (let r = 0; r < 3; r++) {
+    // Iterate rows 0-2 (top half)
     for (let c = 0; c < 4; c++) {
-      let window = [
+      // Look "down" the diagonal.
+      // Note: We need to check board[r+3] so r must start low.
+      // Or we can start at r=3 and look "up". Let's stick to your index style:
+      const window = [
         board[r + 3][c],
         board[r + 2][c + 1],
         board[r + 1][c + 2],
         board[r][c + 3]
       ];
-      score += evaluateWindow(window, playerIndex);
+      score += evaluateWindow(window, piece);
     }
   }
+
   return score;
 }
 
 function calculateStrategicPH() {
-  // Find player indices based on types
-  let acidIndex = players.findIndex((p) => p.type === 'acid');
-  let baseIndex = players.findIndex((p) => p.type === 'base');
+  // 0 = Acid (Red), 1 = Base (Blue)
+  const acidScore = scorePosition(board, 0);
+  const baseScore = scorePosition(board, 1);
 
-  // Default fallback if game hasn't started fully
-  if (acidIndex === -1) acidIndex = 0;
-  if (baseIndex === -1) baseIndex = 1;
+  // Calculate the advantage
+  // Positive number = Base is winning
+  // Negative number = Acid is winning
+  const scoreDiff = baseScore - acidScore;
 
-  const acidScore = getBoardScore(board, acidIndex);
-  const baseScore = getBoardScore(board, baseIndex);
+  // MAPPING STRATEGY:
+  // We want a difference of ~150 (a major threat + some positioning) to swing the meter significantly.
+  // We use a clamp function to prevent the needle from spinning wildly if someone has a score of 10000.
 
-  // Net Difference: Positive = Base winning, Negative = Acid winning
-  const difference = baseScore - acidScore;
+  const maxSwing = 200; // The score difference that equals "Total Domination" (pH 0 or 14)
 
-  // Mapping:
-  // Neutral (0 diff) -> pH 7
-  // Scale factor: A difference of 10 points (roughly one 3-in-a-row) shifts pH by 1.5 units
-  let newPH = 7.0 + difference / 6.0;
+  // Normalize score between -1 and 1
+  let normalized = scoreDiff / maxSwing;
 
-  // Clamp between 0 and 14
-  return Math.max(0, Math.min(14, newPH));
+  // Clamp it (cannot go beyond -1 or 1)
+  if (normalized > 1) normalized = 1;
+  if (normalized < -1) normalized = -1;
+
+  // Map -1 to pH 0 (Acid Win)
+  // Map  0 to pH 7 (Neutral)
+  // Map +1 to pH 14 (Base Win)
+
+  // Formula: pH = 7 + (normalized * 7)
+  let newPH = 7.0 + normalized * 7.0;
+
+  return parseFloat(newPH.toFixed(1));
 }
 
 function updatePHDisplay() {
@@ -701,6 +724,21 @@ function resetGame() {
   players = [];
   initPlayerSetup();
 }
+
+function openHelp() {
+  document.getElementById('helpModal').style.display = 'flex';
+}
+
+function closeHelp() {
+  document.getElementById('helpModal').style.display = 'none';
+}
+
+window.onclick = function (event) {
+  const helpModal = document.getElementById('helpModal');
+  if (event.target === helpModal) {
+    helpModal.style.display = 'none';
+  }
+};
 
 document.addEventListener('DOMContentLoaded', () => {
   initPlayerSetup();
