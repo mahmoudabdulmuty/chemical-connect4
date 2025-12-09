@@ -2,25 +2,25 @@
  * CHEMICAL CONNECT 4 - MAIN APPLICATION
  *
  * TABLE OF CONTENTS:
- * 1. CONFIGURATION & CONSTANTS - Game rules, content, and answer keys.
- * 2. APP STATE - Variables tracking the live game status.
- * 3. AUDIO SYSTEM - Web Audio API synthesis.
- * 4. HELPER UTILITIES - Math, text formatting, and TTS.
- * 5. GAME LOGIC (AI & STRATEGY) - Board evaluation and pH calculation.
- * 6. VISUAL EFFECTS - Particles and UI feedback.
- * 7. GAME FLOW CONTROLLERS - Start, reset, turn management.
- * 8. UI INTERACTION HANDLERS - Modals, inputs, and click events.
- * 9. INITIALIZATION - Event listeners and boot logic.
+ * 1. CONFIGURATION & CONSTANTS
+ * 2. APP STATE
+ * 3. AUDIO SYSTEM
+ * 4. HELPER UTILITIES
+ * 5. GAME LOGIC (AI & STRATEGY)
+ * 6. VISUAL EFFECTS
+ * 7. GAME FLOW CONTROLLERS
+ * 8. UI INTERACTION HANDLERS
+ * 9. INITIALIZATION
  */
 
 /* =========================================
    1. CONFIGURATION & CONSTANTS
    ========================================= */
 
-// Defines player roles (Acid vs Base) and their colors
+// UPDATED: Cleaner names (removed parenthetical colors)
 const PLAYER_ROLES = [
-  { role: 'Acid (Red)', color: '#ef4444', type: 'acid' },
-  { role: 'Base (Blue)', color: '#3b82f6', type: 'base' }
+  { role: 'Acid', color: '#ef4444', type: 'acid' },
+  { role: 'Base', color: '#3b82f6', type: 'base' }
 ];
 
 // Categories for Columns (X-axis) - The titrants/chemicals
@@ -146,6 +146,7 @@ let gameState = {
   currentPlayerIndex: 0,
   board: [], // 6x6 Grid initialized in initGame
   selectedColumn: null, // Tracks user's pending move
+  history: [], // Tracks question log for "Review" mode
 
   // Dynamic Content (can be shuffled in future versions)
   xCategories: [...DEFAULT_X_CATEGORIES],
@@ -534,7 +535,7 @@ function createReactionEffect(x, y, type) {
   }
 }
 
-// Updates the pH Meter UI
+// Updates the pH Meter UI (Simplified: No Reactive Backgrounds)
 function updatePHDisplay() {
   const needle = document.getElementById('phNeedle');
   const valDisp = document.getElementById('phValue');
@@ -615,6 +616,8 @@ function initGame() {
     .map(() => Array(6).fill(null));
   gameState.currentPlayerIndex = 0;
   gameState.currentPH = 7.0;
+  gameState.history = []; // Clear review log
+
   updatePHDisplay();
 
   const boardEl = document.getElementById('gameBoard');
@@ -639,6 +642,7 @@ function initGame() {
     indEl.appendChild(arr);
   }
 
+  // Format X Labels nicely (Subscripts)
   document.getElementById('xLabels').innerHTML = gameState.xCategories
     .map((c) => `<div class="x-label">${formatChemistryText(c)}</div>`)
     .join('');
@@ -646,6 +650,7 @@ function initGame() {
   document.getElementById('yLabels').innerHTML = gameState.yCategories
     .map((c) => `<div class="y-label">${c}</div>`)
     .join('');
+
   updateCurrentPlayerUI();
 }
 
@@ -653,7 +658,9 @@ function updateCurrentPlayerUI() {
   const p = gameState.players[gameState.currentPlayerIndex];
   document.getElementById('currentPlayerIndicator').style.background = p.color;
   const nameEl = document.getElementById('currentPlayerName');
-  nameEl.textContent = `${p.name} (${p.role})`;
+
+  // UPDATED: Design - "Player Name • Role" instead of "Player Name (Role)"
+  nameEl.innerHTML = `${p.name} <span style="opacity:0.6; margin:0 5px;">•</span> ${p.role}`;
   nameEl.style.color = p.color;
 }
 
@@ -728,6 +735,16 @@ function submitAnswer() {
       }
     }
   }
+
+  // --- LOG HISTORY FOR REVIEW ---
+  gameState.history.push({
+    player: gameState.players[gameState.currentPlayerIndex].name,
+    topic: gameState.xCategories[x],
+    question: gameState.yCategories[y],
+    userAnswer: input,
+    isCorrect: isCorrect,
+    validAnswers: valid
+  });
 
   closeModal();
 
@@ -811,22 +828,64 @@ function closeHelp() {
   document.getElementById('helpModal').style.display = 'none';
 }
 
+// Review Modal Logic
+function openReviewModal() {
+  document.getElementById('winnerModal').style.display = 'none'; // Close winner modal
+  const list = document.getElementById('reviewList');
+  list.innerHTML = '';
+
+  if (gameState.history.length === 0) {
+    list.innerHTML =
+      '<p style="text-align:center; padding:20px;">No questions answered yet.</p>';
+  }
+
+  gameState.history.forEach((item) => {
+    const card = document.createElement('div');
+    card.className = `review-item ${item.isCorrect ? 'correct' : 'wrong'}`;
+    const acceptedStr =
+      item.validAnswers && item.validAnswers.length > 0
+        ? item.validAnswers[0]
+        : 'Free Space';
+
+    card.innerHTML = `
+      <div class="review-meta">
+        <span>👤 ${item.player}</span>
+        <span>${item.isCorrect ? '✅ Correct' : '❌ Wrong'}</span>
+      </div>
+      <div class="review-q">
+        <span style="color:#818cf8">${item.topic}:</span> ${item.question}
+      </div>
+      <div class="review-ans">
+        You said: "<strong>${item.userAnswer}</strong>"
+      </div>
+      ${
+        !item.isCorrect
+          ? `
+        <div class="review-note">
+          💡 Note: Accepted answer was "${acceptedStr}".
+        </div>
+      `
+          : ''
+      }
+    `;
+    list.appendChild(card);
+  });
+  document.getElementById('reviewModal').style.display = 'flex';
+}
+
+function closeReviewModal() {
+  document.getElementById('reviewModal').style.display = 'none';
+  resetGame(); // Go back to "First Page" (Setup Screen)
+}
+
 /* =========================================
    9. INITIALIZATION
    ========================================= */
 
+// Event Listeners
 window.addEventListener('click', (e) => {
-  const helpModal = document.getElementById('helpModal');
-  const answerModal = document.getElementById('answerModal');
-
-  // Check if user clicked strictly outside the modal content (on the dark background)
-  if (e.target === helpModal) {
-    closeHelp();
-  }
-
-  if (e.target === answerModal) {
-    closeModal();
-  }
+  if (e.target === document.getElementById('helpModal')) closeHelp();
+  if (e.target === document.getElementById('reviewModal')) closeReviewModal();
 });
 
 document.addEventListener('DOMContentLoaded', () => {

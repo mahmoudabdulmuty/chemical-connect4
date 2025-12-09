@@ -1,13 +1,13 @@
 /* CHEMICAL CONNECT 4 - STYLESHEET
 
    TABLE OF CONTENTS:
-   1. GLOBAL RESET & BASE STYLES - Body, typography, and container.
-   2. SETUP SCREEN - Player cards, inputs, and start buttons.
-   3. GAME SCREEN - Layout, board, cells, and labels.
-   4. pH METER COMPONENT - The gradient bar and needle animation.
-   5. MODALS - Answer popup, Help popup, and Winner screen.
-   6. ANIMATIONS & PARTICLES - Drop effects, smoke, and bubbles.
-   7. UTILITIES - Toast notifications.
+   1. GLOBAL RESET & BASE STYLES
+   2. SETUP SCREEN
+   3. GAME SCREEN
+   4. pH METER COMPONENT
+   5. MODALS (General, Help, Review, Winner)
+   6. ANIMATIONS & PARTICLES
+   7. UTILITIES
 */
 
 /* =========================================
@@ -26,7 +26,7 @@ html {
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #0f172a;
+  background-color: #0f172a; /* Static Dark Slate Background */
   color: #e2e8f0;
   min-height: 100vh;
   display: flex;
@@ -41,7 +41,7 @@ body {
 
 /* Main Wrapper */
 .container {
-  background: #1e293b;
+  background: #1e293b; /* Solid color again, no glass transparency needed for static bg */
   border-radius: 20px;
   padding: 30px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
@@ -49,6 +49,8 @@ body {
   min-width: 1000px;
   width: 100%;
   border: 1px solid #334155;
+  position: relative;
+  z-index: 10;
 }
 
 /* Typography */
@@ -94,7 +96,6 @@ button {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
-/* Player Configuration Cards */
 .players-container-wrapper {
   display: flex;
   flex-direction: column;
@@ -135,7 +136,6 @@ button {
   font-size: 1.2em;
 }
 
-/* Inputs & Color Indicators */
 input[type='text'] {
   background: #0f172a;
   border: 2px solid #475569;
@@ -171,7 +171,6 @@ input[type='text']:focus {
   opacity: 0.8;
 }
 
-/* Action Buttons (Start, Swap, Help) */
 .action-buttons {
   display: flex;
   gap: 15px;
@@ -240,7 +239,7 @@ input[type='text']:focus {
    3. GAME SCREEN
    ========================================= */
 .game-screen {
-  display: none; /* Hidden by default until start */
+  display: none;
 }
 
 .game-info {
@@ -299,7 +298,6 @@ input[type='text']:focus {
   align-items: center;
 }
 
-/* Labels (Y-Axis) */
 .y-labels {
   display: flex;
   flex-direction: column;
@@ -324,7 +322,6 @@ input[type='text']:focus {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-/* Labels (X-Axis) */
 .x-labels-container {
   display: grid;
   grid-template-columns: repeat(6, 90px);
@@ -348,7 +345,6 @@ input[type='text']:focus {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-/* The Grid (Glass Rack) */
 .board.glass-rack {
   display: grid;
   grid-template-columns: repeat(6, 90px);
@@ -362,7 +358,6 @@ input[type='text']:focus {
   box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
 }
 
-/* Individual Cells */
 .cell {
   position: relative;
   background: linear-gradient(
@@ -383,7 +378,6 @@ input[type='text']:focus {
   overflow: hidden;
 }
 
-/* Glass Reflection Effect on Cells */
 .cell::before {
   content: '';
   position: absolute;
@@ -417,7 +411,6 @@ input[type='text']:focus {
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* Column Selectors (Arrows) */
 .column-indicator {
   background: rgba(99, 102, 241, 0.2);
   border-radius: 5px;
@@ -492,7 +485,6 @@ input[type='text']:focus {
   margin: 0 10px;
 }
 
-/* The Gradient Bar */
 .ph-bar {
   width: 100%;
   height: 100%;
@@ -509,7 +501,6 @@ input[type='text']:focus {
   border: 2px solid #334155;
 }
 
-/* The Needle Indicator */
 .ph-needle {
   position: absolute;
   top: -6px;
@@ -572,7 +563,7 @@ input[type='text']:focus {
   background: rgba(0, 0, 0, 0.85);
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 3000;
 }
 
 .modal-content {
@@ -625,7 +616,6 @@ input[type='text']:focus {
   font-weight: bold;
   transition: background 0.3s;
 }
-
 .submit-btn:hover {
   background: #059669;
 }
@@ -641,12 +631,11 @@ input[type='text']:focus {
   font-weight: bold;
   transition: background 0.3s;
 }
-
 .cancel-btn:hover {
   background: #475569;
 }
 
-/* Help Modal Specifics */
+/* --- HELP MODAL --- */
 .help-content {
   max-width: 600px;
   width: 90%;
@@ -698,7 +687,70 @@ input[type='text']:focus {
   margin-top: 10px;
 }
 
-/* Winner Modal */
+/* --- REVIEW MODAL --- */
+.review-content {
+  max-width: 600px;
+  width: 95%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.review-list {
+  flex: 1;
+  overflow-y: auto;
+  margin: 20px 0;
+  text-align: left;
+  padding-right: 10px;
+}
+.review-list::-webkit-scrollbar {
+  width: 6px;
+}
+.review-list::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 3px;
+}
+
+.review-item {
+  background: rgba(15, 23, 42, 0.8);
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  border-left: 4px solid #64748b;
+  font-size: 0.9em;
+}
+.review-item.correct {
+  border-left-color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+}
+.review-item.wrong {
+  border-left-color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.review-q {
+  color: #e2e8f0;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+.review-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85em;
+  color: #94a3b8;
+  margin-bottom: 5px;
+}
+.review-ans {
+  color: #cbd5e1;
+}
+.review-note {
+  margin-top: 5px;
+  font-size: 0.85em;
+  color: #fbbf24;
+  font-style: italic;
+}
+
+/* --- WINNER MODAL --- */
 .winner-modal {
   display: none;
   position: fixed;
@@ -739,14 +791,28 @@ input[type='text']:focus {
   font-size: 1.3em;
   border-radius: 50px;
   cursor: pointer;
-  margin-top: 20px;
   font-weight: bold;
   box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
   transition: transform 0.2s;
 }
-
 .play-again-btn:hover {
   transform: scale(1.05);
+}
+
+.review-btn {
+  background: transparent;
+  border: 2px solid #94a3b8;
+  color: #e2e8f0;
+  padding: 12px 30px;
+  font-size: 1.1em;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+.review-btn:hover {
+  border-color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* =========================================
@@ -788,7 +854,6 @@ input[type='text']:focus {
   background: rgba(255, 255, 255, 0.6);
   border: 1px solid white;
 }
-
 .smoke {
   background: rgba(200, 200, 200, 0.5);
   filter: blur(2px);

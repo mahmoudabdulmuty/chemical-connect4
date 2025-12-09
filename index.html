@@ -137,6 +137,16 @@
         </div>
       </div>
 
+      <div class="modal" id="reviewModal">
+        <div class="modal-content review-content">
+          <h2>📋 Reaction Log</h2>
+          <div id="reviewList" class="review-list"></div>
+          <button class="submit-btn" onclick="closeReviewModal()">
+            🏠 Return to Start
+          </button>
+        </div>
+      </div>
+
       <div class="winner-modal" id="winnerModal">
         <div class="winner-content">
           <h2>🎉 Reaction Complete! 🎉</h2>
@@ -147,9 +157,22 @@
             id="finalPH"
             style="margin-top: 15px; font-weight: bold; color: #cbd5e1"
           ></p>
-          <button class="play-again-btn" onclick="resetGame()">
-            Play Again
-          </button>
+
+          <div
+            style="
+              margin-top: 25px;
+              display: flex;
+              justify-content: center;
+              gap: 10px;
+            "
+          >
+            <button class="review-btn" onclick="openReviewModal()">
+              📄 Review Lab Report
+            </button>
+            <button class="play-again-btn" onclick="resetGame()">
+              Play Again
+            </button>
+          </div>
         </div>
       </div>
     </div>
